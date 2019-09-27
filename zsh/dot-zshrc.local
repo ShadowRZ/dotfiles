@@ -1,0 +1,32 @@
+zstyle ':completion:*' rehash true
+zstyle ':completion:*' menu select
+setopt COMPLETE_ALIASES
+source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source /usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
+source /usr/share/doc/pkgfile/command-not-found.zsh 
+prompt grml
+
+export EDITOR="nvim"
+export VISUAL=$EDITOR
+
+# VTE
+if [ $VTE_VERSION ]; then
+    source /etc/profile.d/vte.sh
+fi
+
+alias edit="$EDITOR"
+alias vim=nvim
+
+export N_PREFIX="$HOME/.local/n"; [[ :$PATH: == *":$N_PREFIX/bin:"* ]] || PATH+=":$N_PREFIX/bin"  # Added by n-install (see http://git.io/n-install-repo).
+
+echo "Phantom Mementoes / Desktop
+$(uname -a)"
+
+# Unset LANG when $DISPLAY is unset.
+[[ $DISPLAY ]] || unset LANG
+
+# Quote URL.
+autoload -U url-quote-magic
+zle -N self-insert url-quote-magic
+
+# vim:ft=zsh
