@@ -1,0 +1,1 @@
+[[ -d ~/.zsh-preload ]] && source ~/.zsh-preload/*

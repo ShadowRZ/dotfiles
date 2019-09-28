@@ -1,9 +1,12 @@
 zstyle ':completion:*' rehash true
 zstyle ':completion:*' menu select
 setopt COMPLETE_ALIASES
-source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-source /usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
-source /usr/share/doc/pkgfile/command-not-found.zsh 
+
+if [[ -z $ANDROID_ROOT ]]; then
+    source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+    source /usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
+    source /usr/share/doc/pkgfile/command-not-found.zsh
+fi
 prompt grml
 
 export EDITOR="nvim"
@@ -28,5 +31,18 @@ $(uname -a)"
 # Quote URL.
 autoload -U url-quote-magic
 zle -N self-insert url-quote-magic
+
+# Antigen.
+antigen bundle git
+
+antigen bundle zsh-users/zsh-autosuggestions
+antigen bundle zsh-users/zsh-completions
+antigen bundle zsh-users/zsh-syntax-highlighting
+antigen bundle zsh-users/zsh-history-substring-search
+
+antigen apply
+
+# Starship theme.
+which starship &>/dev/null && eval "$(starship init zsh)"
 
 # vim:ft=zsh
