@@ -57,9 +57,9 @@ function grml_reset_screen_title () {
         (xterm*|rxvt*) ### NOTE: Add Tmux
             set_title ${(%):-"%n@%m: %~"}
             ;;
-		(tmux*) ### NOTE: Add Tmux
-			set_title ${(%):-"%n@: %~"}
-			;;
+        (tmux*) ### NOTE: Add Tmux
+            set_title ${(%):-"%n@: %~"}
+            ;;
     esac
 }
 
@@ -68,9 +68,9 @@ function grml_control_xterm_title () {
         (xterm*|rxvt*)
             set_title "${(%):-"%n@%m:"}" "$1"
             ;;
-		(tmux*)
+        (tmux*)
             set_title "${(%):-"%n@:"}" "$1"
-			;;
+            ;;
     esac
 }
 # vim:ft=zsh:ts=4:sw=4
