@@ -28,6 +28,10 @@ Plug 'chaimleib/vim-renpy'
 Plug 'morhetz/gruvbox'
 Plug 'tpope/vim-vinegar'
 
+" Skim
+Plug 'lotabout/skim', { 'dir': '~/.skim', 'do': './install' }
+Plug 'lotabout/skim.vim'
+
 call plug#end()
 
 " Airline theme
