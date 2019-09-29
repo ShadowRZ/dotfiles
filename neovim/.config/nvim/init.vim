@@ -70,7 +70,7 @@ vnoremap <leader>] <esc>`<i『<esc>`>la』<esc>
 " This works by setting `filetype' to &filetype.
 "
 " It is useful because by doing this, your filetype codes are reloaded. 
-nnoremap <leader>rsf :execute "set filetype=" . &filetype
+nnoremap <leader>rsf :execute "set filetype=" . &filetype <cr>
 
 " Filetype specific settings
 augroup filetypedetect
