@@ -14,7 +14,7 @@ Plug 'tpope/vim-fugitive'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'chaimleib/vim-renpy'
-Plug 'morhetz/gruvbox'
+Plug 'joshdick/onedark.vim'
 Plug 'tpope/vim-vinegar'
 
 " Skim
@@ -26,14 +26,13 @@ call plug#end()
 
 " Airline theme {{{
 let g:airline_powerline_fonts = 1
-let g:airline_theme = 'gruvbox'
+let g:airline_theme = 'deus'
 " }}}
 
-let g:gruvbox_italic = 1
-let g:gruvbox_contrast_dark = 'hard'
 " Theme. {{{
+let g:onedark_terminal_italic = 1
 
-colorscheme gruvbox
+colorscheme onedark
 " }}}
 
 " Personals {{{
