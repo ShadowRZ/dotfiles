@@ -7,7 +7,7 @@ set number
 set termguicolors
 set mouse=a
 
-" Vim Plugins / vim-plug
+" Vim Plugins / vim-plug {{{
 call plug#begin()
 
 Plug 'tpope/vim-fugitive'
@@ -22,18 +22,21 @@ Plug 'lotabout/skim', { 'dir': '~/.skim', 'do': './install' }
 Plug 'lotabout/skim.vim'
 
 call plug#end()
+" }}}
 
-" Airline theme
+" Airline theme {{{
 let g:airline_powerline_fonts = 1
 let g:airline_theme = 'gruvbox'
+" }}}
 
-" Theme.
 let g:gruvbox_italic = 1
 let g:gruvbox_contrast_dark = 'hard'
+" Theme. {{{
 
 colorscheme gruvbox
+" }}}
 
-" Personals
+" Personals {{{
 let mapleader = ';'
 let maplocalleader = '\\'
 
@@ -78,3 +81,5 @@ augroup filetypedetect
 augroup END
 
 set background=dark
+" }}}
+" vim:ft=vim:ts=4:sw=4:foldmethod=marker
