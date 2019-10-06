@@ -13,7 +13,7 @@ call plug#begin()
 Plug 'tpope/vim-fugitive'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
-Plug 'joshdick/onedark.vim'
+Plug 'dracula/vim', { 'as': 'dracula' }
 Plug 'tpope/vim-vinegar'
 Plug 'xolox/vim-notes'
 Plug 'xolox/vim-misc'
@@ -41,9 +41,7 @@ let g:airline_theme = 'deus'
 " }}}
 
 " Theme. {{{
-let g:onedark_terminal_italic = 1
-
-colorscheme onedark
+colorscheme dracula
 " }}}
 
 " Personals {{{
