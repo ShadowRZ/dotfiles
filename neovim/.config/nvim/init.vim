@@ -13,9 +13,10 @@ call plug#begin()
 Plug 'tpope/vim-fugitive'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
-Plug 'chaimleib/vim-renpy'
 Plug 'joshdick/onedark.vim'
 Plug 'tpope/vim-vinegar'
+Plug 'xolox/vim-notes'
+Plug 'vimwiki/vimwiki'
 
 " Skim
 Plug 'lotabout/skim', { 'dir': '~/.skim', 'do': './install' }
