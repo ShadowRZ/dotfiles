@@ -16,11 +16,21 @@ Plug 'vim-airline/vim-airline-themes'
 Plug 'joshdick/onedark.vim'
 Plug 'tpope/vim-vinegar'
 Plug 'xolox/vim-notes'
+Plug 'xolox/vim-misc'
 Plug 'vimwiki/vimwiki'
 
 " Skim
 Plug 'lotabout/skim', { 'dir': '~/.skim', 'do': './install' }
 Plug 'lotabout/skim.vim'
+
+" deoplete.nvim
+if has('nvim')
+    Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+else
+    Plug 'Shougo/deoplete.nvim'
+    Plug 'roxma/nvim-yarp'
+    Plug 'roxma/vim-hug-neovim-rpc'
+endif
 
 call plug#end()
 " }}}
@@ -70,7 +80,7 @@ vnoremap <leader>] <esc>`<i『<esc>`>la』<esc>
 " [R]e-[S]et `[f]iletype'.
 " This works by setting `filetype' to &filetype.
 "
-" It is useful because by doing this, your filetype codes are reloaded. 
+" It is useful because by doing this, your filetype codes are reloaded.
 nnoremap <leader>rsf :execute "set filetype=" . &filetype <cr>
 
 " Filetype specific settings
