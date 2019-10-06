@@ -20,9 +20,7 @@ fi
 alias edit="$EDITOR"
 alias vim=nvim
 
-if [ -z "$TMUX" ]; then
-	tmux attach -t Default &>/dev/null || tmux new -s Default
-fi
+export N_PREFIX="$HOME/.local/n"; [[ :$PATH: == *":$N_PREFIX/bin:"* ]] || PATH+=":$N_PREFIX/bin"  # Added by n-install (see http://git.io/n-install-repo).
 
 echo "Phantom Mementoes
 $(uname -a)"
@@ -75,5 +73,4 @@ function grml_control_xterm_title () {
             ;;
     esac
 }
-
 # vim:ft=zsh:ts=4:sw=4
