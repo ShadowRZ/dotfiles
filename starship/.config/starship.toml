@@ -1,7 +1,10 @@
 add_newline = false
 
 [character]
-symbol = "→"
+symbol = "$"
 
 [username]
 show_always = true
+
+[jobs]
+symbol = "+ "
