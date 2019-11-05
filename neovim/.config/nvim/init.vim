@@ -32,6 +32,13 @@ else
     Plug 'roxma/vim-hug-neovim-rpc'
 endif
 
+Plug 'Shougo/neco-syntax'
+Plug 'Shougo/neco-vim'
+Plug 'Shougo/deoplete-clangx'
+
+" Clang-format
+Plug 'rhysd/vim-clang-format'
+
 call plug#end()
 " }}}
 
@@ -53,6 +60,18 @@ let g:netrw_liststyle = 3
 let g:netrw_browse_split = 4
 let g:netrw_altv = 1
 let g:netrw_winsize = 25
+
+" deoplete.nvim
+let g:deoplete#enable_at_startup = 1
+call deoplete#custom#option('ignore_sources', {'_': ['around', 'buffer']})
+
+" Clang-format
+let g:clang_format#detect_style_file = 1
+let g:clang_format#style_options = {
+            \ "BasedOnStyle" : "llvm",
+            \ "IndentWidth" : 4,
+            \ "AllowShortFunctionsOnASingleLine" : "None",
+            \ "KeepEmptyLinesAtTheStartOfBlocks" : "false"}
 
 " Uppercase a word and leave the cursor at the end of the word.
 inoremap <c-u> <esc>viwUei
@@ -84,9 +103,17 @@ nnoremap <leader>rsf :execute "set filetype=" . &filetype <cr>
 " Filetype specific settings
 augroup filetypedetect
   " Mail
-  autocmd BufRead,BufNewFile *mutt-* setfiletype mail
-  autocmd BufRead,BufNewFile *mutt-* set tw=72
+  	autocmd BufRead,BufNewFile *mutt-* setfiletype mail
+  	autocmd BufRead,BufNewFile *mutt-* set tw=72
 augroup END
+
+augroup ft_setup
+	autocmd FileType c,cpp,objc nnoremap <buffer><Leader>cf :<C-u>ClangFormat<CR>
+	autocmd FileType c,cpp,objc vnoremap <buffer><Leader>cf :ClangFormat<CR>
+	autocmd FileType c,cpp,objc ClangFormatAutoEnable
+augroup END
+
+nnoremap <Leader>C :ClangFormatAutoToggle<CR>
 
 set background=dark
 " }}}
