@@ -19,6 +19,8 @@ Plug 'xolox/vim-notes'
 Plug 'xolox/vim-misc'
 Plug 'vimwiki/vimwiki'
 
+Plug 'lilydjwg/fcitx.vim'
+
 " Skim
 Plug 'lotabout/skim', { 'dir': '~/.skim', 'do': './install' }
 Plug 'lotabout/skim.vim'
