@@ -25,15 +25,24 @@ $(uname -a)"
 autoload -U url-quote-magic
 zle -N self-insert url-quote-magic
 
-# Antigen.
-antigen bundle git
+# zgen.
+# https://github.com/tarjoilija/zgen
 
-antigen bundle zsh-users/zsh-autosuggestions
-antigen bundle zsh-users/zsh-completions
-antigen bundle zsh-users/zsh-syntax-highlighting
-antigen bundle zsh-users/zsh-history-substring-search
+# Load zgen if cloned.
+[[ -f "${HOME}/.zgen/zgen.zsh" ]] && source "${HOME}/.zgen/zgen.zsh"
 
-antigen apply
+# Do we have zgen initscript ?
+if ! zgen saved; then
+	zgen oh-my-zsh
+	zgen oh-my-zsh plugins/git
+	zgen oh-my-zsh plugins/command-not-found
+	zgen load zsh-users/zsh-autosuggestions
+	zgen load zsh-users/zsh-completions src
+	zgen load zsh-users/zsh-syntax-highlighting
+	zgen load zsh-users/zsh-history-substring-search
+	# Save initscript.
+	zgen save
+fi
 
 # Starship theme.
 which starship &>/dev/null && eval "$(starship init zsh)"
