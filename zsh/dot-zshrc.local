@@ -2,13 +2,6 @@ zstyle ':completion:*' rehash true
 zstyle ':completion:*' menu select
 setopt COMPLETE_ALIASES
 
-if [[ -z $ANDROID_ROOT ]]; then
-    source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-    source /usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
-    source /usr/share/doc/pkgfile/command-not-found.zsh
-fi
-prompt grml
-
 export EDITOR="nvim"
 export VISUAL=$EDITOR
 
