@@ -26,7 +26,11 @@ zle -N self-insert url-quote-magic
 # https://github.com/tarjoilija/zgen
 
 # Load zgen if cloned.
-[[ -f "${HOME}/.zgen/zgen.zsh" ]] && source "${HOME}/.zgen/zgen.zsh"
+if [[ -f "${HOME}/.zgen/zgen.zsh" ]]; then
+	source "${HOME}/.zgen/zgen.zsh"
+else
+	function zgen () { return 1 }
+fi
 
 # Do we have zgen initscript ?
 if ! zgen saved; then
