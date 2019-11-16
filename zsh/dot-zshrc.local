@@ -48,32 +48,4 @@ fi
 # Starship theme.
 which starship &>/dev/null && eval "$(starship init zsh)"
 
-unfunction grml_reset_screen_title
-unfunction grml_control_xterm_title
-
-### XXX: MODIFIED
-function grml_reset_screen_title () {
-    # adjust title of xterm
-    # see http://www.faqs.org/docs/Linux-mini/Xterm-Title.html
-    [[ ${NOTITLE:-} -gt 0 ]] && return 0
-    case $TERM in
-        (xterm*|rxvt*) ### NOTE: Add Tmux
-            set_title ${(%):-"%n@%m: %~"}
-            ;;
-        (tmux*) ### NOTE: Add Tmux
-            set_title ${(%):-"%n@: %~"}
-            ;;
-    esac
-}
-
-function grml_control_xterm_title () {
-    case $TERM in
-        (xterm*|rxvt*)
-            set_title "${(%):-"%n@%m:"}" "$1"
-            ;;
-        (tmux*)
-            set_title "${(%):-"%n@:"}" "$1"
-            ;;
-    esac
-}
 # vim:ft=zsh:ts=4:sw=4
