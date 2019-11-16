@@ -55,6 +55,6 @@ zplugin ice blockf
 zplugin light zsh-users/zsh-completions
 
 # Starship theme.
-which starship &>/dev/null && eval "$(starship init zsh)"
+check_com -c starship && eval "$(starship init zsh)"
 
 # vim:ft=zsh:ts=4:sw=4
