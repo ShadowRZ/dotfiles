@@ -22,28 +22,37 @@ export N_PREFIX="$HOME/.local/n"; [[ :$PATH: == *":$N_PREFIX/bin:"* ]] || PATH+=
 autoload -U url-quote-magic
 zle -N self-insert url-quote-magic
 
-# zgen.
-# https://github.com/tarjoilija/zgen
+# zplugin.
+# https://github.com/zdharma/zplugin
 
-# Load zgen if cloned.
-if [[ -f "${HOME}/.zgen/zgen.zsh" ]]; then
-	source "${HOME}/.zgen/zgen.zsh"
+function _source_zplugin () {
+	source "$HOME/.zplugin/bin/zplugin.zsh"
+	autoload -Uz _zplugin
+	(( ${+_comps} )) && _comps[zplugin]=_zplugin
+}
+
+# Load Zplugin if cloned.
+if [[ -f "$HOME/.zplugin/bin/zplugin.zsh" ]]; then
+	_source_zplugin
+	unfunction _source_zplugin
 else
-	function zgen () { return 1 }
+	function zplugin () { return 1 }
+	function Zplugin-Install () {
+		check_com -c git || { print -P "%B%F{red}!! Git was NOT FOUND :(%f%b" && return 1 }
+		[[ -d "$HOME/.zplugin" ]] || command mkdir -p "$HOME/.zplugin"
+		command git clone https://github.com/zdharma/zplugin.git ~/.zplugin/bin
+		print -P "%B%F{green}=> Zplugin was installed ! :) Now restart Zsh.%f%b"
+	}
+	print -P "%B%F{yellow}=> Zplugin is not installed. Install with \`Zplugin-Install'%f%b"
 fi
 
-# Do we have zgen initscript ?
-if ! zgen saved; then
-	zgen oh-my-zsh
-	zgen oh-my-zsh plugins/git
-	zgen oh-my-zsh plugins/command-not-found
-	zgen load zsh-users/zsh-autosuggestions
-	zgen load zsh-users/zsh-completions src
-	zgen load zsh-users/zsh-syntax-highlighting
-	zgen load zsh-users/zsh-history-substring-search
-	# Save initscript.
-	zgen save
-fi
+zplugin snippet OMZ::plugins/git/git.plugin.zsh
+zplugin snippet OMZ::plugins/command-not-found/command-not-found.plugin.zsh
+zplugin light zdharma/fast-syntax-highlighting
+zplugin light zsh-users/zsh-autosuggestions
+zplugin light zsh-users/zsh-history-substring-search
+zplugin ice blockf
+zplugin light zsh-users/zsh-completions
 
 # Starship theme.
 which starship &>/dev/null && eval "$(starship init zsh)"
