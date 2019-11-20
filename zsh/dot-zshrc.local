@@ -1,6 +1,17 @@
+### SPDX-License-Identifier: MIT -*- Sh -*-
+
+# Styles
 zstyle ':completion:*' rehash true
 zstyle ':completion:*' menu select
+
+# Options
 setopt COMPLETE_ALIASES
+setopt INC_APPEND_HISTORY
+setopt HIST_EXPIRE_DUPS_FIRST
+setopt HIST_FIND_NO_DUPS
+setopt HIST_REDUCE_BLANKS
+
+bindkey -e
 
 export EDITOR="nvim"
 export VISUAL=$EDITOR
@@ -41,16 +52,21 @@ else
 		check_com -c git || { print -P "%B%F{red}!! Git was NOT FOUND :(%f%b" && return 1 }
 		[[ -d "$HOME/.zplugin" ]] || command mkdir -p "$HOME/.zplugin"
 		command git clone https://github.com/zdharma/zplugin.git ~/.zplugin/bin
-		print -P "%B%F{green}=> Zplugin was installed ! :) Now restart Zsh.%f%b"
+		print -P "%B%F{green}=> Zplugin was installed ! :) Installing plugins...%f%b"
+		exec zsh
 	}
 	print -P "%B%F{yellow}=> Zplugin is not installed. Install with \`Zplugin-Install'%f%b"
 fi
+
+export YSU_MESSAGE_POSITION="after"
+export YSU_IGNORED_ALIASES=("zpl" "zplg" "g" "vim")
 
 zplugin snippet OMZ::plugins/git/git.plugin.zsh
 zplugin snippet OMZ::plugins/command-not-found/command-not-found.plugin.zsh
 zplugin light zdharma/fast-syntax-highlighting
 zplugin light zsh-users/zsh-autosuggestions
 zplugin light zsh-users/zsh-history-substring-search
+zplugin light MichaelAquilina/zsh-you-should-use 
 zplugin ice blockf
 zplugin light zsh-users/zsh-completions
 
