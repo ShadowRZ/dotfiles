@@ -18,6 +18,7 @@ Plug 'tpope/vim-vinegar'
 Plug 'xolox/vim-notes'
 Plug 'xolox/vim-misc'
 Plug 'vimwiki/vimwiki'
+Plug 'tikhomirov/vim-glsl'
 
 Plug 'lilydjwg/fcitx.vim'
 
@@ -113,10 +114,12 @@ augroup ft_setup
 	autocmd FileType c,cpp,objc nnoremap <buffer><Leader>cf :<C-u>ClangFormat<CR>
 	autocmd FileType c,cpp,objc vnoremap <buffer><Leader>cf :ClangFormat<CR>
 	autocmd FileType c,cpp,objc ClangFormatAutoEnable
+	autocmd FileType c,cpp,objc setlocal ts=4 sw=4 et
 augroup END
 
 nnoremap <Leader>C :ClangFormatAutoToggle<CR>
 
 set background=dark
+set tabstop=4 shiftwidth=4 expandtab
 " }}}
 " vim:ft=vim:ts=4:sw=4:foldmethod=marker
