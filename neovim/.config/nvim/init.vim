@@ -13,7 +13,7 @@ call plug#begin()
 Plug 'tpope/vim-fugitive'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
-Plug 'dracula/vim', { 'as': 'dracula' }
+Plug 'chriskempson/base16-vim'
 Plug 'tpope/vim-vinegar'
 Plug 'xolox/vim-notes'
 Plug 'xolox/vim-misc'
@@ -51,7 +51,12 @@ let g:airline_theme = 'deus'
 " }}}
 
 " Theme. {{{
-colorscheme dracula
+let base16colorspace=256
+
+if filereadable(expand("~/.vimrc_background"))
+    let base16colorspace=256
+    source ~/.vimrc_background
+endif
 " }}}
 
 " Personals {{{
