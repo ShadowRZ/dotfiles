@@ -70,7 +70,16 @@ zplugin light MichaelAquilina/zsh-you-should-use
 zplugin ice blockf
 zplugin light zsh-users/zsh-completions
 
+zplugin light zdharma/zui
+zplugin light zdharma/zplugin-crasis
+
 # Starship theme.
 check_com -c starship && eval "$(starship init zsh)"
+
+# Base16 Shell
+BASE16_SHELL="$HOME/.config/base16-shell/"
+[ -n "$PS1" ] && \
+    [ -s "$BASE16_SHELL/profile_helper.sh" ] && \
+        eval "$("$BASE16_SHELL/profile_helper.sh")"
 
 # vim:ft=zsh:ts=4:sw=4
