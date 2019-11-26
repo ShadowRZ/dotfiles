@@ -11,6 +11,7 @@ set mouse=a
 call plug#begin()
 
 Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-surround'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'chriskempson/base16-vim'
@@ -44,12 +45,10 @@ Plug 'rhysd/vim-clang-format'
 
 call plug#end()
 " }}}
-
 " Airline theme {{{
 let g:airline_powerline_fonts = 1
 let g:airline_theme = 'deus'
 " }}}
-
 " Theme. {{{
 let base16colorspace=256
 
@@ -58,7 +57,6 @@ if filereadable(expand("~/.vimrc_background"))
     source ~/.vimrc_background
 endif
 " }}}
-
 " Personals {{{
 let mapleader = ';'
 let maplocalleader = '\\'
@@ -108,6 +106,8 @@ vnoremap <leader>] <esc>`<i『<esc>`>la』<esc>
 " It is useful because by doing this, your filetype codes are reloaded.
 nnoremap <leader>rsf :execute "set filetype=" . &filetype <cr>
 
+nnoremap <Space> za
+
 " Filetype specific settings
 augroup filetypedetect
   " Mail
@@ -125,6 +125,6 @@ augroup END
 nnoremap <Leader>C :ClangFormatAutoToggle<CR>
 
 set background=dark
-set tabstop=4 shiftwidth=4 expandtab
+set tabstop=4 shiftwidth=4 softtabstop=4 expandtab
 " }}}
 " vim:ft=vim:ts=4:sw=4:foldmethod=marker
