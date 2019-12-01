@@ -1,2 +1,3 @@
 export LANG=zh_CN.UTF-8
 export XDG_CURRENT_DESKTOP=X-Generic
+export XDG_MENU_PREFIX=gnome-
