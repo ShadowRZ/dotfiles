@@ -49,17 +49,17 @@ if [[ -f "$HOME/.zplugin/bin/zplugin.zsh" ]]; then
 else
 	function zplugin () { return 1 }
 	function Zplugin-Install () {
-		check_com -c git || { print -P "%B%F{red}!! Git was NOT FOUND :(%f%b" && return 1 }
+		check_com -c git || { print -P "%B%F{red}!! Git was NOT FOUND :(%f%b" >&2 && return 1 }
 		[[ -d "$HOME/.zplugin" ]] || command mkdir -p "$HOME/.zplugin"
 		command git clone https://github.com/zdharma/zplugin.git ~/.zplugin/bin
 		print -P "%B%F{green}=> Zplugin was installed ! :) Installing plugins...%f%b"
 		exec zsh
 	}
-	print -P "%B%F{yellow}=> Zplugin is not installed. Install with \`Zplugin-Install'%f%b"
+	print -P "%B%F{yellow}=> Zplugin is not installed. Install with \`Zplugin-Install'%f%b" >&2
 fi
 
-export YSU_MESSAGE_POSITION="after"
-export YSU_IGNORED_ALIASES=("zpl" "zplg" "g" "vim")
+YSU_MESSAGE_POSITION="after"
+YSU_IGNORED_ALIASES=("zpl" "zplg" "g" "vim")
 
 zplugin snippet OMZ::plugins/git/git.plugin.zsh
 zplugin snippet OMZ::plugins/command-not-found/command-not-found.plugin.zsh
@@ -73,8 +73,18 @@ zplugin light zsh-users/zsh-completions
 zplugin light zdharma/zui
 zplugin light zdharma/zplugin-crasis
 
-# Starship theme.
-check_com -c starship && eval "$(starship init zsh)"
+# Spaceship
+SPACESHIP_PROMPT_ADD_NEWLINE=false
+SPACESHIP_CHAR_SYMBOL='$ '
+SPACESHIP_CHAR_SYMBOL_ROOT='# '
+SPACESHIP_USER_SHOW=needed
+SPACESHIP_DIR_LOCK_SYMBOL=' [RO]'
+SPACESHIP_EXIT_CODE_SHOW=true
+SPACESHIP_EXIT_CODE_SYMBOL=''
+
+# XXX: Hack
+prompt default
+zplugin light denysdovhan/spaceship-prompt
 
 # Base16 Shell
 BASE16_SHELL="$HOME/.config/base16-shell/"
