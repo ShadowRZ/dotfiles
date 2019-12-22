@@ -40,6 +40,8 @@ Plug 'Shougo/neco-syntax'
 Plug 'Shougo/neco-vim'
 Plug 'Shougo/deoplete-clangx'
 
+Plug 'deoplete-plugins/deoplete-jedi'
+
 " Clang-format
 Plug 'rhysd/vim-clang-format'
 
