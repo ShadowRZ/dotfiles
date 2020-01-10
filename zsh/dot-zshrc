@@ -1,0 +1,151 @@
+### SPDX-License-Identifier: MIT -*- Sh -*-
+
+# Styles
+zstyle ':completion:*' rehash true
+zstyle ':completion:*' menu yes select
+zstyle ':prezto:module:terminal' auto-title 'yes'
+
+# Options
+setopt COMPLETE_ALIASES
+setopt INC_APPEND_HISTORY
+setopt HIST_EXPIRE_DUPS_FIRST
+setopt HIST_FIND_NO_DUPS
+setopt HIST_REDUCE_BLANKS
+setopt EXTENDED_GLOB
+setopt AUTO_MENU
+setopt AUTO_CD
+setopt AUTO_PUSHD
+setopt PUSHDMINUS
+setopt ALWAYS_TO_END
+setopt NULLGLOB
+unsetopt FLOW_CONTROL
+
+HISTFILE=~/.zsh_history
+HISTSIZE=35000
+SAVEHIST="$HISTSIZE"
+
+bindkey -e
+
+export EDITOR="nvim"
+export VISUAL=$EDITOR
+
+# VTE
+if [ $VTE_VERSION ]; then
+    source /etc/profile.d/vte.sh
+fi
+
+alias edit="$EDITOR"
+alias vim=nvim
+
+export N_PREFIX="$HOME/.local/n"; [[ :$PATH: == *":$N_PREFIX/bin:"* ]] || PATH+=":$N_PREFIX/bin"  # Added by n-install (see http://git.io/n-install-repo).
+
+# Unset LANG when $DISPLAY is unset.
+[[ $DISPLAY ]] || unset LANG
+
+# Quote URL.
+autoload -Uz url-quote-magic
+zle -N self-insert url-quote-magic
+
+# Support hooked functions.
+autoload -Uz add-zsh-hook
+
+# zplugin.
+# https://github.com/zdharma/zplugin
+
+function _source_zplugin () {
+	source "$HOME/.zplugin/bin/zplugin.zsh"
+	autoload -Uz _zplugin
+	(( ${+_comps} )) && _comps[zplugin]=_zplugin
+}
+
+# Load Zplugin if cloned.
+if [[ -f "$HOME/.zplugin/bin/zplugin.zsh" ]]; then
+	_source_zplugin
+	unfunction _source_zplugin
+else
+    # Basic LS_COLORS
+    eval $(dircolors)
+	function zplugin () { return 1 }
+	function Zplugin-Install () {
+		which git >/dev/null 2>&1 || { print -P "%B%F{red}!! Git was NOT FOUND :(%f%b" >&2 && return 1 }
+		[[ -d "$HOME/.zplugin" ]] || command mkdir -p "$HOME/.zplugin"
+		command git clone https://github.com/zdharma/zplugin.git ~/.zplugin/bin
+		print -P "%B%F{green}=> Zplugin was installed ! :) Installing plugins...%f%b"
+		exec zsh
+	}
+	print -P "%B%F{yellow}=> Zplugin is not installed. Install with \`Zplugin-Install'%f%b" >&2
+fi
+
+YSU_MESSAGE_POSITION="after"
+YSU_IGNORED_ALIASES=("zpl" "zplg" "g" "vim")
+
+zplugin light romkatv/zsh-defer
+
+PS1=......
+zplugin ice lucid wait'!'
+zplugin light denysdovhan/spaceship-prompt
+
+zplugin ice lucid wait
+zsh-defer zplugin snippet OMZ::plugins/git/git.plugin.zsh
+zplugin ice lucid wait
+zsh-defer zplugin snippet OMZ::plugins/command-not-found/command-not-found.plugin.zsh
+zplugin ice lucid wait
+zsh-defer zplugin snippet PZT::modules/completion/init.zsh
+zplugin ice lucid wait atload'add-zsh-hook precmd _terminal-set-titles-with-path; add-zsh-hook preexec _terminal-set-titles-with-command'
+zsh-defer zplugin snipper PZT::modules/terminal/init.zsh
+zplugin ice lucid wait
+zsh-defer zplugin light zdharma/fast-syntax-highlighting
+zplugin ice lucid wait atload'_zsh_autosuggest_start'
+zsh-defer zplugin light zsh-users/zsh-autosuggestions
+zplugin ice lucid wait
+zsh-defer zplugin light zsh-users/zsh-history-substring-search
+zplugin ice lucid wait
+zsh-defer zplugin light MichaelAquilina/zsh-you-should-use 
+zplugin ice blockf lucid wait
+zsh-defer zplugin light zsh-users/zsh-completions
+
+zplugin ice lucid wait'[[ -n ${ZLAST_COMMANDS[(r)cras*]} ]]'
+zsh-defer zplugin light zdharma/zui
+zplugin ice lucid wait'[[ -n ${ZLAST_COMMANDS[(r)cras*]} ]]'
+zsh-defer zplugin light zdharma/zplugin-crasis
+
+# Extended LS_COLORS
+zplugin ice atclone"dircolors -b LS_COLORS > c.zsh" atpull'%atclone' pick"c.zsh"
+zsh-defer zplugin load trapd00r/LS_COLORS
+
+# Spaceship
+SPACESHIP_PROMPT_ADD_NEWLINE=false
+SPACESHIP_CHAR_SYMBOL='$ '
+SPACESHIP_CHAR_SYMBOL_ROOT='# '
+SPACESHIP_USER_SHOW=needed
+SPACESHIP_DIR_LOCK_SYMBOL=' [RO]'
+SPACESHIP_EXIT_CODE_SHOW=true
+SPACESHIP_EXIT_CODE_SYMBOL=''
+
+# Base16 Shell
+BASE16_SHELL="$HOME/.config/base16-shell/"
+[ -n "$PS1" ] && \
+    [ -s "$BASE16_SHELL/profile_helper.sh" ] && \
+        eval "$("$BASE16_SHELL/profile_helper.sh")"
+
+# Others
+autoload -Uz zmv
+autoload -Uz zargs
+autoload -U edit-command-line
+zle -N edit-command-line
+bindkey '^x^e' edit-command-line
+
+# Help
+autoload -Uz run-help
+unalias run-help
+alias help=run-help
+
+autoload -Uz run-help-git
+autoload -Uz run-help-ip
+autoload -Uz run-help-openssl
+autoload -Uz run-help-p4
+autoload -Uz run-help-sudo
+autoload -Uz run-help-svk
+autoload -Uz run-help-svn
+
+# vim:ft=zsh:ts=4:sw=4
