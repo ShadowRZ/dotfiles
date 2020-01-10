@@ -90,6 +90,8 @@ zsh-defer zplugin snippet OMZ::plugins/git/git.plugin.zsh
 zplugin ice lucid wait
 zsh-defer zplugin snippet OMZ::plugins/command-not-found/command-not-found.plugin.zsh
 zplugin ice lucid wait
+zsh-defer zplugin snippet OMZ::plugins/colored-man-pages/colored-man-pages.plugin.zsh
+zplugin ice lucid wait
 zsh-defer zplugin snippet PZT::modules/completion/init.zsh
 zplugin ice lucid wait atload'add-zsh-hook precmd _terminal-set-titles-with-path; add-zsh-hook preexec _terminal-set-titles-with-command'
 zsh-defer zplugin snipper PZT::modules/terminal/init.zsh
