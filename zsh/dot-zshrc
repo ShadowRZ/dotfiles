@@ -66,7 +66,7 @@ YSU_IGNORED_ALIASES=("zpl" "zplg" "g" "vim")
 
 zplugin light romkatv/zsh-defer
 
-PS1=......
+PS1=''
 zplugin ice lucid wait'!'
 zplugin light denysdovhan/spaceship-prompt
 
@@ -74,9 +74,10 @@ zplugin light denysdovhan/spaceship-prompt
 zsh-defer zplugin snippet OMZ::plugins/git/git.plugin.zsh
 zsh-defer zplugin snippet OMZ::plugins/command-not-found/command-not-found.plugin.zsh
 zsh-defer zplugin snippet OMZ::plugins/colored-man-pages/colored-man-pages.plugin.zsh
+zsh-defer zplugin snippet OMZ::plugins/hitokoto/hitokoto.plugin.zsh
 zsh-defer zplugin snippet PZT::modules/completion/init.zsh
 zplugin ice atload'_terminal-set-titles-with-path'
-zsh-defer zplugin snippet PZT::modules/terminal/init.zsh
+zplugin snippet PZT::modules/terminal/init.zsh
 # Plugins.
 zsh-defer zplugin light MichaelAquilina/zsh-you-should-use
 zsh-defer zplugin light zsh-users/zsh-history-substring-search
@@ -84,12 +85,12 @@ zsh-defer zplugin light zsh-users/zsh-completions
 zsh-defer zplugin light zdharma/fast-syntax-highlighting
 zsh-defer zplugin light zsh-users/zsh-autosuggestions
 zplugin ice lucid wait
-zsh-defer zplugin light chriskempson/base16-shell
+zplugin light chriskempson/base16-shell
 
 # Crasis (load when we use it).
-zplugin ice wait'[[ -n ${ZLAST_COMMANDS[(r)cras*]} ]]'
+zplugin ice lucid wait'[[ -n ${ZLAST_COMMANDS[(r)cras*]} ]]'
 zplugin light zdharma/zui
-zplugin ice wait'[[ -n ${ZLAST_COMMANDS[(r)cras*]} ]]'
+zplugin ice lucid wait'[[ -n ${ZLAST_COMMANDS[(r)cras*]} ]]'
 zplugin light zdharma/zplugin-crasis
 
 # Extended LS_COLORS
@@ -157,62 +158,22 @@ key[ShiftTab]="${terminfo[kcbt]}"
 [[ -n "${key[PageDown]}"  ]] && bindkey -- "${key[PageDown]}"  end-of-buffer-or-history
 [[ -n "${key[ShiftTab]}"  ]] && bindkey -- "${key[ShiftTab]}"  reverse-menu-complete
 
-# Finally, make sure the terminal is in application mode, when zle is
-# active. Only then are the values from $terminfo valid.
-if (( ${+terminfo[smkx]} && ${+terminfo[rmkx]} )); then
-    autoload -Uz add-zle-hook-widget
-    function zle_application_mode_start {
-        echoti smkx
-    }
-    function zle_application_mode_stop {
-        echoti rmkx
-    }
-    add-zle-hook-widget -Uz zle-line-init zle_application_mode_start
-    add-zle-hook-widget -Uz zle-line-finish zle_application_mode_stop
-fi
+# Om-my-zsh suggested bindings.
+
+# bind UP and DOWN arrow keys (compatibility fallback
+# for Ubuntu 12.04, Fedora 21, and MacOSX 10.9 users)
+bindkey '^[[A' history-substring-search-up
+bindkey '^[[B' history-substring-search-down
+
+# bind P and N for EMACS mode
+bindkey -M emacs '^P' history-substring-search-up
+bindkey -M emacs '^N' history-substring-search-down
+
+# bind k and j for VI mode
+bindkey -M vicmd 'k' history-substring-search-up
+bindkey -M vicmd 'j' history-substring-search-down
 
 # From grml-zsh-config.
-
-typeset -ga ls_options
-typeset -ga grep_options
-
-# Colors on GNU ls(1)
-if ls --color=auto / >/dev/null 2>&1; then
-    ls_options+=( --color=auto )
-# Colors on FreeBSD and OSX ls(1)
-elif ls -G / >/dev/null 2>&1; then
-    ls_options+=( -G )
-fi
-
-# Natural sorting order on GNU ls(1)
-# OSX and IllumOS have a -v option that is not natural sorting
-if ls --version |& grep -q 'GNU' >/dev/null 2>&1 && ls -v / >/dev/null 2>&1; then
-    ls_options+=( -v )
-fi
-
-# Color on GNU and FreeBSD grep(1)
-if grep --color=auto -q "a" <<< "a" >/dev/null 2>&1; then
-    grep_options+=( --color=auto )
-fi
-
-# do we have GNU ls with color-support?
-if [[ "$TERM" != dumb ]]; then
-    #a1# List files with colors (\kbd{ls \ldots})
-    alias ls="command ls ${ls_options:+${ls_options[*]}}"
-    #a1# List all files, with colors (\kbd{ls -la \ldots})
-    alias la="command ls -la ${ls_options:+${ls_options[*]}}"
-    #a1# List files with long colored list, without dotfiles (\kbd{ls -l \ldots})
-    alias ll="command ls -l ${ls_options:+${ls_options[*]}}"
-    #a1# List files with long colored list, human readable sizes (\kbd{ls -hAl \ldots})
-    alias lh="command ls -hAl ${ls_options:+${ls_options[*]}}"
-    #a1# List files with long colored list, append qualifier to filenames (\kbd{ls -l \ldots})\\&\quad(\kbd{/} for directories, \kbd{@} for symlinks ...)
-    alias l="command ls -l ${ls_options:+${ls_options[*]}}"
-else
-    alias la='command ls -la'
-    alias ll='command ls -l'
-    alias lh='command ls -hAl'
-    alias l='command ls -l'
-fi
 
 if [[ -r /proc/mdstat ]]; then
     alias mdstat='cat /proc/mdstat'
@@ -220,15 +181,29 @@ fi
 
 alias ...='cd ../../'
 
-# use colors when GNU grep with color-support
-if (( $#grep_options > 0 )); then
-    o=${grep_options:+"${grep_options[*]}"}
-    #a2# Execute \kbd{grep -{}-color=auto}
-    alias grep='grep '$o
-    alias egrep='egrep '$o
-    unset o
-fi
+# From Prezto.
 
+# BSD ls colors.
+export LSCOLORS='exfxcxdxbxGxDxabagacad'
+
+alias l='ls -1A'         # Lists in one column, hidden files.
+alias ll='ls -lh'        # Lists human readable sizes.
+alias lr='ll -R'         # Lists human readable sizes, recursively.
+alias la='ll -A'         # Lists human readable sizes, hidden files.
+alias lm='la | "$PAGER"' # Lists human readable sizes, hidden files through pager.
+alias lx='ll -XB'        # Lists sorted by extension (GNU only).
+alias lk='ll -Sr'        # Lists sorted by size, largest last.
+alias lt='ll -tr'        # Lists sorted by date, most recent last.
+alias lc='lt -c'         # Lists sorted by date, most recent last, shows change time.
+alias lu='lt -u'         # Lists sorted by date, most recent last, shows access time.
+
+# Grep colors.
+export GREP_COLOR='37;45'           # BSD.
+export GREP_COLORS="mt=$GREP_COLOR" # GNU.
+
+alias grep="${aliases[grep]:-grep} --color=auto"
+
+which _terminal-set-titles-with-path >/dev/null 2>&1 && _terminal-set-titles-with-path
 # Load user config.
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
 # vim:ft=zsh:ts=4:sw=4
