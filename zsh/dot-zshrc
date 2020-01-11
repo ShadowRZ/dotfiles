@@ -46,19 +46,19 @@ zle -N self-insert url-quote-magic
 
 # Load Zplugin if cloned.
 if [[ -f "$HOME/.zplugin/bin/zplugin.zsh" ]]; then
-	source "$HOME/.zplugin/bin/zplugin.zsh"
-	autoload -Uz _zplugin
-	(( ${+_comps} )) && _comps[zplugin]=_zplugin
+    source "$HOME/.zplugin/bin/zplugin.zsh"
+    autoload -Uz _zplugin
+    (( ${+_comps} )) && _comps[zplugin]=_zplugin
 else
-	function zplugin () { return 1 }
-	function Zplugin-Install () {
-		which git >/dev/null 2>&1 || { print -P "%B%F{red}!! Git was NOT FOUND :(%f%b" >&2 && return 1 }
-		[[ -d "$HOME/.zplugin" ]] || command mkdir -p "$HOME/.zplugin"
-		command git clone https://github.com/zdharma/zplugin.git ~/.zplugin/bin
-		print -P "%B%F{green}=> Zplugin was installed ! :) Installing plugins...%f%b"
-		exec zsh
-	}
-	print -P "%B%F{yellow}=> Zplugin is not installed. Install with \`Zplugin-Install'%f%b" >&2
+    function zplugin () { return 1 }
+    function Zplugin-Install () {
+        which git >/dev/null 2>&1 || { print -P "%B%F{red}!! Git was NOT FOUND :(%f%b" >&2 && return 1 }
+        [[ -d "$HOME/.zplugin" ]] || command mkdir -p "$HOME/.zplugin"
+        command git clone https://github.com/zdharma/zplugin.git ~/.zplugin/bin
+        print -P "%B%F{green}=> Zplugin was installed ! :) Installing plugins...%f%b"
+        exec zsh
+    }
+    print -P "%B%F{yellow}=> Zplugin is not installed. Install with \`Zplugin-Install'%f%b" >&2
 fi
 
 YSU_MESSAGE_POSITION="after"
@@ -75,6 +75,7 @@ zsh-defer zplugin snippet OMZ::plugins/git/git.plugin.zsh
 zsh-defer zplugin snippet OMZ::plugins/command-not-found/command-not-found.plugin.zsh
 zsh-defer zplugin snippet OMZ::plugins/colored-man-pages/colored-man-pages.plugin.zsh
 zsh-defer zplugin snippet PZT::modules/completion/init.zsh
+zplugin ice atload'_terminal-set-titles-with-path'
 zsh-defer zplugin snippet PZT::modules/terminal/init.zsh
 # Plugins.
 zsh-defer zplugin light MichaelAquilina/zsh-you-should-use
@@ -113,7 +114,6 @@ bindkey '^x^e' edit-command-line
 
 # Help
 autoload -Uz run-help
-unalias run-help
 alias help=run-help
 
 autoload -Uz run-help-git
@@ -123,4 +123,112 @@ autoload -Uz run-help-p4
 autoload -Uz run-help-sudo
 autoload -Uz run-help-svk
 autoload -Uz run-help-svn
+
+# Source: https://wiki.archlinux.org/index.php/Zsh#Key_bindings (modified)
+
+# create a zkbd compatible hash;
+# to add other keys to this hash, see: man 5 terminfo
+typeset -g -A key
+
+key[Home]="${terminfo[khome]}"
+key[End]="${terminfo[kend]}"
+key[Insert]="${terminfo[kich1]}"
+key[Backspace]="${terminfo[kbs]}"
+key[Delete]="${terminfo[kdch1]}"
+key[Up]="${terminfo[kcuu1]}"
+key[Down]="${terminfo[kcud1]}"
+key[Left]="${terminfo[kcub1]}"
+key[Right]="${terminfo[kcuf1]}"
+key[PageUp]="${terminfo[kpp]}"
+key[PageDown]="${terminfo[knp]}"
+key[ShiftTab]="${terminfo[kcbt]}"
+
+# setup key accordingly
+[[ -n "${key[Home]}"      ]] && bindkey -- "${key[Home]}"      beginning-of-line
+[[ -n "${key[End]}"       ]] && bindkey -- "${key[End]}"       end-of-line
+[[ -n "${key[Insert]}"    ]] && bindkey -- "${key[Insert]}"    overwrite-mode
+[[ -n "${key[Backspace]}" ]] && bindkey -- "${key[Backspace]}" backward-delete-char
+[[ -n "${key[Delete]}"    ]] && bindkey -- "${key[Delete]}"    delete-char
+[[ -n "${key[Up]}"        ]] && bindkey -- "${key[Up]}"        history-substring-search-up
+[[ -n "${key[Down]}"      ]] && bindkey -- "${key[Down]}"      history-substring-search-down
+[[ -n "${key[Left]}"      ]] && bindkey -- "${key[Left]}"      backward-char
+[[ -n "${key[Right]}"     ]] && bindkey -- "${key[Right]}"     forward-char
+[[ -n "${key[PageUp]}"    ]] && bindkey -- "${key[PageUp]}"    beginning-of-buffer-or-history
+[[ -n "${key[PageDown]}"  ]] && bindkey -- "${key[PageDown]}"  end-of-buffer-or-history
+[[ -n "${key[ShiftTab]}"  ]] && bindkey -- "${key[ShiftTab]}"  reverse-menu-complete
+
+# Finally, make sure the terminal is in application mode, when zle is
+# active. Only then are the values from $terminfo valid.
+if (( ${+terminfo[smkx]} && ${+terminfo[rmkx]} )); then
+    autoload -Uz add-zle-hook-widget
+    function zle_application_mode_start {
+        echoti smkx
+    }
+    function zle_application_mode_stop {
+        echoti rmkx
+    }
+    add-zle-hook-widget -Uz zle-line-init zle_application_mode_start
+    add-zle-hook-widget -Uz zle-line-finish zle_application_mode_stop
+fi
+
+# From grml-zsh-config.
+
+typeset -ga ls_options
+typeset -ga grep_options
+
+# Colors on GNU ls(1)
+if ls --color=auto / >/dev/null 2>&1; then
+    ls_options+=( --color=auto )
+# Colors on FreeBSD and OSX ls(1)
+elif ls -G / >/dev/null 2>&1; then
+    ls_options+=( -G )
+fi
+
+# Natural sorting order on GNU ls(1)
+# OSX and IllumOS have a -v option that is not natural sorting
+if ls --version |& grep -q 'GNU' >/dev/null 2>&1 && ls -v / >/dev/null 2>&1; then
+    ls_options+=( -v )
+fi
+
+# Color on GNU and FreeBSD grep(1)
+if grep --color=auto -q "a" <<< "a" >/dev/null 2>&1; then
+    grep_options+=( --color=auto )
+fi
+
+# do we have GNU ls with color-support?
+if [[ "$TERM" != dumb ]]; then
+    #a1# List files with colors (\kbd{ls \ldots})
+    alias ls="command ls ${ls_options:+${ls_options[*]}}"
+    #a1# List all files, with colors (\kbd{ls -la \ldots})
+    alias la="command ls -la ${ls_options:+${ls_options[*]}}"
+    #a1# List files with long colored list, without dotfiles (\kbd{ls -l \ldots})
+    alias ll="command ls -l ${ls_options:+${ls_options[*]}}"
+    #a1# List files with long colored list, human readable sizes (\kbd{ls -hAl \ldots})
+    alias lh="command ls -hAl ${ls_options:+${ls_options[*]}}"
+    #a1# List files with long colored list, append qualifier to filenames (\kbd{ls -l \ldots})\\&\quad(\kbd{/} for directories, \kbd{@} for symlinks ...)
+    alias l="command ls -l ${ls_options:+${ls_options[*]}}"
+else
+    alias la='command ls -la'
+    alias ll='command ls -l'
+    alias lh='command ls -hAl'
+    alias l='command ls -l'
+fi
+
+if [[ -r /proc/mdstat ]]; then
+    alias mdstat='cat /proc/mdstat'
+fi
+
+alias ...='cd ../../'
+
+# use colors when GNU grep with color-support
+if (( $#grep_options > 0 )); then
+    o=${grep_options:+"${grep_options[*]}"}
+    #a2# Execute \kbd{grep -{}-color=auto}
+    alias grep='grep '$o
+    alias egrep='egrep '$o
+    unset o
+fi
+
+# Load user config.
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
 # vim:ft=zsh:ts=4:sw=4
