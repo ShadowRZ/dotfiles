@@ -37,34 +37,19 @@ fi
 alias edit="$EDITOR"
 alias vim=nvim
 
-export N_PREFIX="$HOME/.local/n"; [[ :$PATH: == *":$N_PREFIX/bin:"* ]] || PATH+=":$N_PREFIX/bin"  # Added by n-install (see http://git.io/n-install-repo).
-
-# Unset LANG when $DISPLAY is unset.
-[[ $DISPLAY ]] || unset LANG
-
 # Quote URL.
 autoload -Uz url-quote-magic
 zle -N self-insert url-quote-magic
 
-# Support hooked functions.
-autoload -Uz add-zsh-hook
-
 # zplugin.
 # https://github.com/zdharma/zplugin
 
-function _source_zplugin () {
+# Load Zplugin if cloned.
+if [[ -f "$HOME/.zplugin/bin/zplugin.zsh" ]]; then
 	source "$HOME/.zplugin/bin/zplugin.zsh"
 	autoload -Uz _zplugin
 	(( ${+_comps} )) && _comps[zplugin]=_zplugin
-}
-
-# Load Zplugin if cloned.
-if [[ -f "$HOME/.zplugin/bin/zplugin.zsh" ]]; then
-	_source_zplugin
-	unfunction _source_zplugin
 else
-    # Basic LS_COLORS
-    eval $(dircolors)
 	function zplugin () { return 1 }
 	function Zplugin-Install () {
 		which git >/dev/null 2>&1 || { print -P "%B%F{red}!! Git was NOT FOUND :(%f%b" >&2 && return 1 }
@@ -85,31 +70,26 @@ PS1=......
 zplugin ice lucid wait'!'
 zplugin light denysdovhan/spaceship-prompt
 
-zplugin ice lucid wait
+# Snippets.
 zsh-defer zplugin snippet OMZ::plugins/git/git.plugin.zsh
-zplugin ice lucid wait
 zsh-defer zplugin snippet OMZ::plugins/command-not-found/command-not-found.plugin.zsh
-zplugin ice lucid wait
 zsh-defer zplugin snippet OMZ::plugins/colored-man-pages/colored-man-pages.plugin.zsh
-zplugin ice lucid wait
 zsh-defer zplugin snippet PZT::modules/completion/init.zsh
-zplugin ice lucid wait atload'add-zsh-hook precmd _terminal-set-titles-with-path; add-zsh-hook preexec _terminal-set-titles-with-command'
-zsh-defer zplugin snipper PZT::modules/terminal/init.zsh
-zplugin ice lucid wait
+zsh-defer zplugin snippet PZT::modules/terminal/init.zsh
+# Plugins.
+zsh-defer zplugin light MichaelAquilina/zsh-you-should-use
+zsh-defer zplugin light zsh-users/zsh-history-substring-search
+zsh-defer zplugin light zsh-users/zsh-completions
 zsh-defer zplugin light zdharma/fast-syntax-highlighting
-zplugin ice lucid wait atload'_zsh_autosuggest_start'
 zsh-defer zplugin light zsh-users/zsh-autosuggestions
 zplugin ice lucid wait
-zsh-defer zplugin light zsh-users/zsh-history-substring-search
-zplugin ice lucid wait
-zsh-defer zplugin light MichaelAquilina/zsh-you-should-use 
-zplugin ice blockf lucid wait
-zsh-defer zplugin light zsh-users/zsh-completions
+zsh-defer zplugin light chriskempson/base16-shell
 
-zplugin ice lucid wait'[[ -n ${ZLAST_COMMANDS[(r)cras*]} ]]'
-zsh-defer zplugin light zdharma/zui
-zplugin ice lucid wait'[[ -n ${ZLAST_COMMANDS[(r)cras*]} ]]'
-zsh-defer zplugin light zdharma/zplugin-crasis
+# Crasis (load when we use it).
+zplugin ice wait'[[ -n ${ZLAST_COMMANDS[(r)cras*]} ]]'
+zplugin light zdharma/zui
+zplugin ice wait'[[ -n ${ZLAST_COMMANDS[(r)cras*]} ]]'
+zplugin light zdharma/zplugin-crasis
 
 # Extended LS_COLORS
 zplugin ice atclone"dircolors -b LS_COLORS > c.zsh" atpull'%atclone' pick"c.zsh"
@@ -123,12 +103,6 @@ SPACESHIP_USER_SHOW=needed
 SPACESHIP_DIR_LOCK_SYMBOL=' [RO]'
 SPACESHIP_EXIT_CODE_SHOW=true
 SPACESHIP_EXIT_CODE_SYMBOL=''
-
-# Base16 Shell
-BASE16_SHELL="$HOME/.config/base16-shell/"
-[ -n "$PS1" ] && \
-    [ -s "$BASE16_SHELL/profile_helper.sh" ] && \
-        eval "$("$BASE16_SHELL/profile_helper.sh")"
 
 # Others
 autoload -Uz zmv
@@ -149,5 +123,4 @@ autoload -Uz run-help-p4
 autoload -Uz run-help-sudo
 autoload -Uz run-help-svk
 autoload -Uz run-help-svn
-
 # vim:ft=zsh:ts=4:sw=4
