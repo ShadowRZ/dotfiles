@@ -71,12 +71,13 @@ zplugin ice lucid wait'!'
 zplugin light denysdovhan/spaceship-prompt
 
 # Snippets.
-zsh-defer zplugin snippet OMZ::plugins/git/git.plugin.zsh
+zplugin ice lucid wait
+zplugin snippet OMZ::plugins/git/git.plugin.zsh
 zsh-defer zplugin snippet OMZ::plugins/command-not-found/command-not-found.plugin.zsh
 zsh-defer zplugin snippet OMZ::plugins/colored-man-pages/colored-man-pages.plugin.zsh
 zsh-defer zplugin snippet OMZ::plugins/hitokoto/hitokoto.plugin.zsh
 zsh-defer zplugin snippet PZT::modules/completion/init.zsh
-zplugin ice atload'_terminal-set-titles-with-path'
+zplugin ice lucid wait atload'_terminal-set-titles-with-path'
 zplugin snippet PZT::modules/terminal/init.zsh
 # Plugins.
 zsh-defer zplugin light MichaelAquilina/zsh-you-should-use
@@ -186,6 +187,7 @@ alias ...='cd ../../'
 # BSD ls colors.
 export LSCOLORS='exfxcxdxbxGxDxabagacad'
 
+alias ls='command ls --color'
 alias l='ls -1A'         # Lists in one column, hidden files.
 alias ll='ls -lh'        # Lists human readable sizes.
 alias lr='ll -R'         # Lists human readable sizes, recursively.
