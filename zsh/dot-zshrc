@@ -94,8 +94,6 @@ zsh-defer zplugin snippet OMZ::plugins/command-not-found/command-not-found.plugi
 zsh-defer zplugin snippet OMZ::plugins/colored-man-pages/colored-man-pages.plugin.zsh
 zsh-defer zplugin snippet OMZ::plugins/hitokoto/hitokoto.plugin.zsh
 zsh-defer zplugin snippet PZT::modules/completion/init.zsh
-zplugin ice lucid wait atload'_terminal-set-titles-with-path'
-zplugin snippet PZT::modules/terminal/init.zsh
 # Plugins.
 zsh-defer zplugin light MichaelAquilina/zsh-you-should-use
 zsh-defer zplugin light zsh-users/zsh-history-substring-search
@@ -132,6 +130,7 @@ zle -N edit-command-line
 bindkey '^x^e' edit-command-line
 
 # Help
+unalias run-help
 autoload -Uz run-help
 alias help=run-help
 
@@ -142,6 +141,26 @@ autoload -Uz run-help-p4
 autoload -Uz run-help-sudo
 autoload -Uz run-help-svk
 autoload -Uz run-help-svn
+
+# Terminal Title
+autoload -Uz add-zsh-hook
+
+function set-xterm-terminal-title () {
+    printf '\e]2;%s\a' "$@"
+}
+
+function precmd-set-terminal-title () {
+    set-xterm-terminal-title "${(%):-"%n@%m: %~"}"
+}
+
+function preexec-set-terminal-title () {
+    set-xterm-terminal-title "${(%):-"%n@%m: "}$2"
+}
+
+if [[ "$TERM" == (screen*|xterm*|rxvt*|tmux*|putty*|konsole*|gnome*) ]]; then
+    add-zsh-hook -Uz precmd precmd-set-terminal-title
+    add-zsh-hook -Uz preexec preexec-set-terminal-title
+fi
 
 # Source: https://wiki.archlinux.org/index.php/Zsh#Key_bindings (modified)
 
