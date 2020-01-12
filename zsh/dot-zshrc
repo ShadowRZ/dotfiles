@@ -379,7 +379,9 @@ export GREP_COLORS="mt=$GREP_COLOR" # GNU.
 
 alias grep="${aliases[grep]:-grep} --color=auto"
 
-which _terminal-set-titles-with-path >/dev/null 2>&1 && _terminal-set-titles-with-path
 # Load user config.
-[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
+if [[ -f ~/.zshrc.local ]]; then
+    source ~/.zshrc.local
+fi
+
 # vim:ft=zsh:ts=4:sw=4
