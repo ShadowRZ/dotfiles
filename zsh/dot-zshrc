@@ -38,8 +38,25 @@ alias edit="$EDITOR"
 alias vim=nvim
 
 # Quote URL.
+# Please note, both url-quote-magic and bracketed-paste-url-magic are loaded.
+
+# https://archive.zhimingwang.org/blog/2015-09-21-zsh-51-and-bracketed-paste.html
+autoload -Uz bracketed-paste-url-magic
+zle -N bracketed-paste bracketed-paste-url-magic
+
+# Modified from https://github.com/lilydjwg/dotzsh/blob/master/zshrc
 autoload -Uz url-quote-magic
 zle -N self-insert url-quote-magic
+# Original name: toogle-uqm
+function self-insert-switch-url-quote-magic () {
+    if zle -l self-insert; then
+        zle -A .self-insert self-insert && zle -M "=> Disabled url-quote-magic"
+    else
+        zle -N self-insert url-quote-magic && zle -M "=> Enabled url-quote-magic"
+    fi
+}
+zle -N self-insert-switch-url-quote-magic
+bindkey '^X$' self-insert-switch-url-quote-magic
 
 # zplugin.
 # https://github.com/zdharma/zplugin
