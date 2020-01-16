@@ -106,7 +106,7 @@ zplugin ice lucid wait'[[ -n ${ZLAST_COMMANDS[(r)cras*]} ]]'
 zplugin light zdharma/zplugin-crasis
 
 # Extended LS_COLORS
-zplugin ice lucid wait atclone"dircolors -b LS_COLORS > c.zsh" atpull'%atclone' pick"c.zsh" nocompile'!'
+zplugin ice atclone"dircolors -b LS_COLORS > c.zsh" atpull'%atclone' pick"c.zsh" nocompile'!'
 zplugin load trapd00r/LS_COLORS
 
 # Spaceship
@@ -361,7 +361,7 @@ alias ...='cd ../../'
 # BSD ls colors.
 export LSCOLORS='exfxcxdxbxGxDxabagacad'
 
-alias ls='command ls --color'
+alias ls='command ls --color=auto'
 alias l='ls -1A'         # Lists in one column, hidden files.
 alias ll='ls -lh'        # Lists human readable sizes.
 alias lr='ll -R'         # Lists human readable sizes, recursively.
