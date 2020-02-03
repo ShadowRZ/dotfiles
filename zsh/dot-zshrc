@@ -55,59 +55,57 @@ function self-insert-switch-url-quote-magic () {
 zle -N self-insert-switch-url-quote-magic
 bindkey '^X$' self-insert-switch-url-quote-magic
 
-# zplugin.
-# https://github.com/zdharma/zplugin
+# zinit.
+# https://github.com/zdharma/zinit
 
-# Load Zplugin if cloned.
-if [[ -f "$HOME/.zplugin/bin/zplugin.zsh" ]]; then
-    source "$HOME/.zplugin/bin/zplugin.zsh"
-    autoload -Uz _zplugin
-    (( ${+_comps} )) && _comps[zplugin]=_zplugin
+# Load Zinit if cloned.
+if [[ -f "$HOME/.zinit/bin/zinit.zsh" ]]; then
+    source "$HOME/.zinit/bin/zinit.zsh"
+    autoload -Uz _zinit
+    (( ${+_comps} )) && _comps[zinit]=_zinit
 else
-    function zplugin () { return 1 }
-    function Zplugin-Install () {
+    function zinit () { return 1 }
+    function zsh-defer () { return 1 }
+    function Zinit-Install () {
         which git >/dev/null 2>&1 || { print -P "%B%F{red}!! Git was NOT FOUND :(%f%b" >&2 && return 1 }
-        [[ -d "$HOME/.zplugin" ]] || command mkdir -p "$HOME/.zplugin"
-        command git clone https://github.com/zdharma/zplugin.git ~/.zplugin/bin
-        print -P "%B%F{green}=> Zplugin was installed ! :) Installing plugins...%f%b"
+        [[ -d "$HOME/.zinit" ]] || command mkdir -p "$HOME/.zinit"
+        command git clone https://github.com/zdharma/zinit.git ~/.zinit/bin
+        print -P "%B%F{green}=> Zinit was installed ! :) Installing plugins...%f%b"
         exec zsh
     }
-    print -P "%B%F{yellow}=> Zplugin is not installed. Install with \`Zplugin-Install'%f%b" >&2
+    print -P "%B%F{yellow}=> Zinit is not installed. Install with \`Zinit-Install'%f%b" >&2
 fi
 
 YSU_MESSAGE_POSITION="after"
 YSU_IGNORED_ALIASES=("zpl" "zplg" "g" "vim")
 
-zplugin light romkatv/zsh-defer
-
-PS1=''
-zplugin ice lucid wait'!'
-zplugin light denysdovhan/spaceship-prompt
+zinit light romkatv/zsh-defer
+zinit light denysdovhan/spaceship-prompt
 
 # Snippets.
-zplugin ice lucid wait
-zplugin snippet OMZ::plugins/git/git.plugin.zsh
-zsh-defer zplugin snippet OMZ::plugins/command-not-found/command-not-found.plugin.zsh
-zsh-defer zplugin snippet OMZ::plugins/colored-man-pages/colored-man-pages.plugin.zsh
-zsh-defer zplugin snippet OMZ::plugins/hitokoto/hitokoto.plugin.zsh
+zinit ice lucid wait
+zinit snippet OMZ::plugins/git/git.plugin.zsh
+zsh-defer zinit snippet OMZ::plugins/command-not-found/command-not-found.plugin.zsh
+zsh-defer zinit snippet OMZ::plugins/colored-man-pages/colored-man-pages.plugin.zsh
+zsh-defer zinit snippet OMZ::plugins/hitokoto/hitokoto.plugin.zsh
 # Plugins.
-zsh-defer zplugin light MichaelAquilina/zsh-you-should-use
-zsh-defer zplugin light zsh-users/zsh-history-substring-search
-zsh-defer zplugin light zsh-users/zsh-completions
-zsh-defer zplugin light zdharma/fast-syntax-highlighting
-zsh-defer zplugin light zsh-users/zsh-autosuggestions
-zplugin ice lucid wait
-zplugin light chriskempson/base16-shell
+zsh-defer zinit light MichaelAquilina/zsh-you-should-use
+zsh-defer zinit light zsh-users/zsh-history-substring-search
+zsh-defer zinit light zsh-users/zsh-completions
+zsh-defer zinit light zdharma/fast-syntax-highlighting
+zsh-defer zinit light zsh-users/zsh-autosuggestions
+zinit ice lucid wait
+zinit light chriskempson/base16-shell
 
 # Crasis (load when we use it).
-zplugin ice lucid wait'[[ -n ${ZLAST_COMMANDS[(r)cras*]} ]]'
-zplugin light zdharma/zui
-zplugin ice lucid wait'[[ -n ${ZLAST_COMMANDS[(r)cras*]} ]]'
-zplugin light zdharma/zplugin-crasis
+zinit ice lucid wait'[[ -n ${ZLAST_COMMANDS[(r)cras*]} ]]'
+zinit light zdharma/zui
+zinit ice lucid wait'[[ -n ${ZLAST_COMMANDS[(r)cras*]} ]]'
+zinit light zdharma/zinit-crasis
 
 # Extended LS_COLORS
-zplugin ice atclone"dircolors -b LS_COLORS > c.zsh" atpull'%atclone' pick"c.zsh" nocompile'!'
-zplugin load trapd00r/LS_COLORS
+zinit ice atclone"dircolors -b LS_COLORS > c.zsh" atpull'%atclone' pick"c.zsh" nocompile'!'
+zinit load trapd00r/LS_COLORS
 
 # Spaceship
 SPACESHIP_PROMPT_ADD_NEWLINE=false
@@ -262,10 +260,10 @@ function completion-setup () {
     zstyle ':completion:*' rehash true
 
     # Completion fixups.
-    compdef _zplugin zpl
-    compdef _zplugin zplg
+    compdef _zinit zi
+    compdef _zinit zin
 
-    zplugin cdreplay -q
+    zinit cdreplay -q
 }
 
 zsh-defer completion-setup
