@@ -1,21 +1,34 @@
 ### SPDX-License-Identifier: MIT -*- Sh -*-
 
 # Options
-setopt COMPLETE_ALIASES
+
+# History related options.
+setopt HIST_VERIFY
 setopt INC_APPEND_HISTORY
 setopt HIST_EXPIRE_DUPS_FIRST
 setopt HIST_FIND_NO_DUPS
 setopt HIST_REDUCE_BLANKS
-setopt EXTENDED_GLOB
+setopt EXTENDED_HISTORY
+setopt HIST_FCNTL_LOCK
+# Completion related options.
+setopt ALWAYS_TO_END
 setopt AUTO_MENU
+setopt COMPLETE_ALIASES
+unsetopt MENU_COMPLETE
+# Navigation related options.
+setopt PUSHD_MINUS
 setopt AUTO_CD
 setopt AUTO_PUSHD
-setopt PUSHDMINUS
-setopt ALWAYS_TO_END
-setopt NULLGLOB
+# Globbing related options.
+setopt EXTENDED_GLOB
+setopt NOMATCH
+# I/O related options.
 setopt NO_CLOBBER
-unsetopt MENU_COMPLETE
+setopt INTERACTIVE_COMMENTS
+setopt RC_QUOTES
 unsetopt FLOW_CONTROL
+# Remove any RPROMPT after executing command.
+setopt TRANSIENT_RPROMPT
 
 HISTFILE=~/.zsh_history
 HISTSIZE=35000
@@ -61,8 +74,6 @@ bindkey '^X$' self-insert-switch-url-quote-magic
 # Load Zinit if cloned.
 if [[ -f "$HOME/.zinit/bin/zinit.zsh" ]]; then
     source "$HOME/.zinit/bin/zinit.zsh"
-    autoload -Uz _zinit
-    (( ${+_comps} )) && _comps[zinit]=_zinit
 else
     function zinit () { return 1 }
     function zsh-defer () { return 1 }
@@ -77,13 +88,14 @@ else
 fi
 
 YSU_MESSAGE_POSITION="after"
-YSU_IGNORED_ALIASES=("zpl" "zplg" "g" "vim")
+YSU_IGNORED_ALIASES=("zi" "zin" "zini" "zpl" "zplg" "g" "vim")
 
 zinit light romkatv/zsh-defer
 zinit light denysdovhan/spaceship-prompt
+zinit ice wait lucid atpull'zinit creinstall -q .'
+zinit light zsh-users/zsh-completions
 
 # Snippets.
-zinit ice lucid wait
 zinit snippet OMZ::plugins/git/git.plugin.zsh
 zsh-defer zinit snippet OMZ::plugins/command-not-found/command-not-found.plugin.zsh
 zsh-defer zinit snippet OMZ::plugins/colored-man-pages/colored-man-pages.plugin.zsh
@@ -91,10 +103,9 @@ zsh-defer zinit snippet OMZ::plugins/hitokoto/hitokoto.plugin.zsh
 # Plugins.
 zsh-defer zinit light MichaelAquilina/zsh-you-should-use
 zsh-defer zinit light zsh-users/zsh-history-substring-search
-zsh-defer zinit light zsh-users/zsh-completions
 zsh-defer zinit light zdharma/fast-syntax-highlighting
 zsh-defer zinit light zsh-users/zsh-autosuggestions
-zinit ice lucid wait
+zinit ice lucid wait'[[ -n "$DISPLAY" || -n "$ANDROID_ROOT" ]]'
 zinit light chriskempson/base16-shell
 
 # Crasis (load when we use it).
@@ -105,7 +116,7 @@ zinit light zdharma/zinit-crasis
 
 # Extended LS_COLORS
 zinit ice atclone"dircolors -b LS_COLORS > c.zsh" atpull'%atclone' pick"c.zsh" nocompile'!'
-zinit load trapd00r/LS_COLORS
+zinit light trapd00r/LS_COLORS
 
 # Spaceship
 SPACESHIP_PROMPT_ADD_NEWLINE=false
@@ -159,8 +170,7 @@ fi
 # Completion system. (Modified from grml)
 
 function completion-setup () {
-    autoload -Uz compinit
-    compinit
+    zinit compinit
 
     # allow one error for every three characters typed in approximate completer
     zstyle ':completion:*:approximate:'    max-errors 'reply=( $((($#PREFIX+$#SUFFIX)/3 )) numeric )'
@@ -315,7 +325,7 @@ if (( ${+terminfo[smkx]} && ${+terminfo[rmkx]} )); then
     add-zle-hook-widget -Uz zle-line-finish zle_application_mode_stop
 fi
 
-# Om-my-zsh suggested bindings.
+# Oh-my-zsh suggested bindings.
 
 # bind UP and DOWN arrow keys (compatibility fallback
 # for Ubuntu 12.04, Fedora 21, and MacOSX 10.9 users)
