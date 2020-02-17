@@ -38,6 +38,7 @@ bindkey -e
 
 export EDITOR="nvim"
 export VISUAL=$EDITOR
+export PAGER=less
 
 # VTE
 if [ $VTE_VERSION ]; then
@@ -95,19 +96,6 @@ zinit light denysdovhan/spaceship-prompt
 zinit ice wait lucid atpull'zinit creinstall -q .'
 zinit light zsh-users/zsh-completions
 
-# Snippets.
-zinit snippet OMZ::plugins/git/git.plugin.zsh
-zsh-defer zinit snippet OMZ::plugins/command-not-found/command-not-found.plugin.zsh
-zsh-defer zinit snippet OMZ::plugins/colored-man-pages/colored-man-pages.plugin.zsh
-zsh-defer zinit snippet OMZ::plugins/hitokoto/hitokoto.plugin.zsh
-# Plugins.
-zsh-defer zinit light MichaelAquilina/zsh-you-should-use
-zsh-defer zinit light zsh-users/zsh-history-substring-search
-zsh-defer zinit light zdharma/fast-syntax-highlighting
-zsh-defer zinit light zsh-users/zsh-autosuggestions
-zinit ice lucid wait'[[ -n "$DISPLAY" || -n "$ANDROID_ROOT" ]]'
-zinit light chriskempson/base16-shell
-
 # Crasis (load when we use it).
 zinit ice lucid wait'[[ -n ${ZLAST_COMMANDS[(r)cras*]} ]]'
 zinit light zdharma/zui
@@ -117,6 +105,18 @@ zinit light zdharma/zinit-crasis
 # Extended LS_COLORS
 zinit ice atclone"dircolors -b LS_COLORS > c.zsh" atpull'%atclone' pick"c.zsh" nocompile'!'
 zinit light trapd00r/LS_COLORS
+
+# Snippets.
+zsh-defer zinit snippet OMZ::plugins/git/git.plugin.zsh
+zsh-defer zinit snippet OMZ::plugins/command-not-found/command-not-found.plugin.zsh
+zsh-defer zinit snippet OMZ::plugins/colored-man-pages/colored-man-pages.plugin.zsh
+zsh-defer zinit snippet OMZ::plugins/hitokoto/hitokoto.plugin.zsh
+# Plugins.
+zsh-defer zinit light MichaelAquilina/zsh-you-should-use
+zsh-defer zinit light zsh-users/zsh-history-substring-search
+zsh-defer zinit light zdharma/fast-syntax-highlighting
+zsh-defer zinit light zsh-users/zsh-autosuggestions
+zsh-defer zinit light chriskempson/base16-shell
 
 # Spaceship
 SPACESHIP_PROMPT_ADD_NEWLINE=false
