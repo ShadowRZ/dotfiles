@@ -101,6 +101,9 @@ zinit atclone"dircolors -b LS_COLORS > c.zsh" atpull'%atclone' pick"c.zsh" nocom
 autoload -Uz compinit
 compinit
 
+# Multi-word history search.
+zstyle ":plugin:history-search-multi-word" reset-prompt-protect 1
+
 # Snippets / Plugins.
 zsh-defer zinit light-mode for \
     atload'zpcdreplay' OMZ::plugins/git/git.plugin.zsh \
@@ -109,7 +112,9 @@ zsh-defer zinit light-mode for \
     OMZ::plugins/hitokoto/hitokoto.plugin.zsh \
     MichaelAquilina/zsh-you-should-use \
     zsh-users/zsh-history-substring-search \
-    chriskempson/base16-shell \
+    zdharma/history-search-multi-word \
+    voronkovich/gitignore.plugin.zsh \
+    if'[[ -n $DISPLAY || -n $ANDROID_ROOT ]]' chriskempson/base16-shell \
     blockf atpull'zinit creinstall -q .' zsh-users/zsh-completions \
     atinit"zpcdreplay" zdharma/fast-syntax-highlighting \
     atload"_zsh_autosuggest_start" zsh-users/zsh-autosuggestions
