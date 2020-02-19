@@ -13,7 +13,6 @@ setopt HIST_FCNTL_LOCK
 # Completion related options.
 setopt ALWAYS_TO_END
 setopt AUTO_MENU
-setopt COMPLETE_ALIASES
 unsetopt MENU_COMPLETE
 # Navigation related options.
 setopt PUSHD_MINUS
@@ -26,6 +25,7 @@ setopt NOMATCH
 setopt NO_CLOBBER
 setopt INTERACTIVE_COMMENTS
 setopt RC_QUOTES
+setopt CORRECT
 unsetopt FLOW_CONTROL
 # Remove any RPROMPT after executing command.
 setopt TRANSIENT_RPROMPT
@@ -88,35 +88,28 @@ else
     print -P "%B%F{yellow}=> Zinit is not installed. Install with \`Zinit-Install'%f%b" >&2
 fi
 
-YSU_MESSAGE_POSITION="after"
-YSU_IGNORED_ALIASES=("zi" "zin" "zini" "zpl" "zplg" "g" "vim")
-
-zinit light romkatv/zsh-defer
 zinit light denysdovhan/spaceship-prompt
-zinit ice wait lucid atpull'zinit creinstall -q .'
-zinit light zsh-users/zsh-completions
-
-# Crasis (load when we use it).
-zinit ice lucid wait'[[ -n ${ZLAST_COMMANDS[(r)cras*]} ]]'
-zinit light zdharma/zui
-zinit ice lucid wait'[[ -n ${ZLAST_COMMANDS[(r)cras*]} ]]'
-zinit light zdharma/zinit-crasis
+zinit light romkatv/zsh-defer
 
 # Extended LS_COLORS
-zinit ice atclone"dircolors -b LS_COLORS > c.zsh" atpull'%atclone' pick"c.zsh" nocompile'!'
-zinit light trapd00r/LS_COLORS
+zinit atclone"dircolors -b LS_COLORS > c.zsh" atpull'%atclone' pick"c.zsh" nocompile'!' light-mode for trapd00r/LS_COLORS
 
-# Snippets.
-zsh-defer zinit snippet OMZ::plugins/git/git.plugin.zsh
-zsh-defer zinit snippet OMZ::plugins/command-not-found/command-not-found.plugin.zsh
-zsh-defer zinit snippet OMZ::plugins/colored-man-pages/colored-man-pages.plugin.zsh
-zsh-defer zinit snippet OMZ::plugins/hitokoto/hitokoto.plugin.zsh
-# Plugins.
-zsh-defer zinit light MichaelAquilina/zsh-you-should-use
-zsh-defer zinit light zsh-users/zsh-history-substring-search
-zsh-defer zinit light zdharma/fast-syntax-highlighting
-zsh-defer zinit light zsh-users/zsh-autosuggestions
-zsh-defer zinit light chriskempson/base16-shell
+# Completion system.
+autoload -Uz compinit
+compinit
+
+# Snippets / Plugins.
+zsh-defer zinit light-mode for \
+    atload'zpcdreplay' OMZ::plugins/git/git.plugin.zsh \
+    OMZ::plugins/command-not-found/command-not-found.plugin.zsh \
+    OMZ::plugins/colored-man-pages/colored-man-pages.plugin.zsh \
+    OMZ::plugins/hitokoto/hitokoto.plugin.zsh \
+    MichaelAquilina/zsh-you-should-use \
+    zsh-users/zsh-history-substring-search \
+    chriskempson/base16-shell \
+    blockf atpull'zinit creinstall -q .' zsh-users/zsh-completions \
+    atinit"zpcdreplay" zdharma/fast-syntax-highlighting \
+    atload"_zsh_autosuggest_start" zsh-users/zsh-autosuggestions
 
 # Spaceship
 SPACESHIP_PROMPT_ADD_NEWLINE=false
@@ -126,6 +119,10 @@ SPACESHIP_USER_SHOW=needed
 SPACESHIP_DIR_LOCK_SYMBOL=' [RO]'
 SPACESHIP_EXIT_CODE_SHOW=true
 SPACESHIP_EXIT_CODE_SYMBOL=''
+
+# You should use
+YSU_MESSAGE_POSITION="after"
+YSU_IGNORED_ALIASES=("zi" "zin" "zini" "zpl" "zplg" "g" "vim")
 
 # Others
 autoload -Uz zmv
@@ -169,114 +166,102 @@ fi
 
 # Completion system. (Modified from grml)
 
-function completion-setup () {
-    zinit compinit
+# allow one error for every three characters typed in approximate completer
+zstyle ':completion:*:approximate:'    max-errors 'reply=( $((($#PREFIX+$#SUFFIX)/3 )) numeric )'
 
-    # allow one error for every three characters typed in approximate completer
-    zstyle ':completion:*:approximate:'    max-errors 'reply=( $((($#PREFIX+$#SUFFIX)/3 )) numeric )'
+# don't complete backup files as executables
+zstyle ':completion:*:complete:-command-::commands' ignored-patterns '(*\~)'
 
-    # don't complete backup files as executables
-    zstyle ':completion:*:complete:-command-::commands' ignored-patterns '(*\~)'
+# start menu completion only if it could find no unambiguous initial string
+zstyle ':completion:*:correct:*'       insert-unambiguous true
+zstyle ':completion:*:corrections'     format $'%{\e[0;31m%}%d (errors: %e)%{\e[0m%}'
+zstyle ':completion:*:correct:*'       original true
 
-    # start menu completion only if it could find no unambiguous initial string
-    zstyle ':completion:*:correct:*'       insert-unambiguous true
-    zstyle ':completion:*:corrections'     format $'%{\e[0;31m%}%d (errors: %e)%{\e[0m%}'
-    zstyle ':completion:*:correct:*'       original true
+# activate color-completion
+zstyle ':completion:*:default'         list-colors ${(s.:.)LS_COLORS}
 
-    # activate color-completion
-    zstyle ':completion:*:default'         list-colors ${(s.:.)LS_COLORS}
+# format on completion
+zstyle ':completion:*:descriptions'    format $'%{\e[0;31m%}## From %B%d%b%{\e[0m%}'
 
-    # format on completion
-    zstyle ':completion:*:descriptions'    format $'%{\e[0;31m%}## From %B%d%b%{\e[0m%}'
+# automatically complete 'cd -<tab>' and 'cd -<ctrl-d>' with menu
+zstyle ':completion:*:*:cd:*:directory-stack' menu yes select
 
-    # automatically complete 'cd -<tab>' and 'cd -<ctrl-d>' with menu
-    zstyle ':completion:*:*:cd:*:directory-stack' menu yes select
+# insert all expansions for expand completer
+zstyle ':completion:*:expand:*'        tag-order all-expansions
+zstyle ':completion:*:history-words'   list false
 
-    # insert all expansions for expand completer
-    zstyle ':completion:*:expand:*'        tag-order all-expansions
-    zstyle ':completion:*:history-words'   list false
+# activate menu
+zstyle ':completion:*:history-words'   menu yes
+zstyle ':completion:*:*:*:*:*'         menu yes select
 
-    # activate menu
-    zstyle ':completion:*:history-words'   menu yes
-    zstyle ':completion:*:*:*:*:*'         menu yes select
+# ignore duplicate entries
+zstyle ':completion:*:history-words'   remove-all-dups yes
+zstyle ':completion:*:history-words'   stop yes
 
-    # ignore duplicate entries
-    zstyle ':completion:*:history-words'   remove-all-dups yes
-    zstyle ':completion:*:history-words'   stop yes
+# match uppercase from lowercase
+zstyle ':completion:*'                 matcher-list 'm:{a-z}={A-Z}'
 
-    # match uppercase from lowercase
-    zstyle ':completion:*'                 matcher-list 'm:{a-z}={A-Z}'
+# separate matches into groups
+zstyle ':completion:*:matches'         group 'yes'
+zstyle ':completion:*'                 group-name ''
 
-    # separate matches into groups
-    zstyle ':completion:*:matches'         group 'yes'
-    zstyle ':completion:*'                 group-name ''
+zstyle ':completion:*:messages'        format '%d'
+zstyle ':completion:*:options'         auto-description '%d'
 
-    zstyle ':completion:*:messages'        format '%d'
-    zstyle ':completion:*:options'         auto-description '%d'
+# describe options in full
+zstyle ':completion:*:options'         description 'yes'
 
-    # describe options in full
-    zstyle ':completion:*:options'         description 'yes'
+# on processes completion complete all user processes
+zstyle ':completion:*:processes'       command 'ps -au$USER'
 
-    # on processes completion complete all user processes
-    zstyle ':completion:*:processes'       command 'ps -au$USER'
+# offer indexes before parameters in subscripts
+zstyle ':completion:*:*:-subscript-:*' tag-order indexes parameters
 
-    # offer indexes before parameters in subscripts
-    zstyle ':completion:*:*:-subscript-:*' tag-order indexes parameters
+# provide verbose completion information
+zstyle ':completion:*'                 verbose true
 
-    # provide verbose completion information
-    zstyle ':completion:*'                 verbose true
+# recent (as of Dec 2007) zsh versions are able to provide descriptions
+# for commands (read: 1st word in the line) that it will list for the user
+# to choose from. The following disables that, because it's not exactly fast.
+zstyle ':completion:*:-command-:*:'    verbose false
 
-    # recent (as of Dec 2007) zsh versions are able to provide descriptions
-    # for commands (read: 1st word in the line) that it will list for the user
-    # to choose from. The following disables that, because it's not exactly fast.
-    zstyle ':completion:*:-command-:*:'    verbose false
+# set format for warnings
+zstyle ':completion:*:warnings'        format $'%{\e[0;31m%}## No matches found. :(%{\e[0m%}'
 
-    # set format for warnings
-    zstyle ':completion:*:warnings'        format $'%{\e[0;31m%}## No matches found. :(%{\e[0m%}'
+# define files to ignore for zcompile
+zstyle ':completion:*:*:zcompile:*'    ignored-patterns '(*~|*.zwc)'
+zstyle ':completion:correct:'          prompt 'correct to: %e'
 
-    # define files to ignore for zcompile
-    zstyle ':completion:*:*:zcompile:*'    ignored-patterns '(*~|*.zwc)'
-    zstyle ':completion:correct:'          prompt 'correct to: %e'
+# Ignore completion functions for commands you don't have:
+zstyle ':completion::(^approximate*):*:functions' ignored-patterns '_*'
 
-    # Ignore completion functions for commands you don't have:
-    zstyle ':completion::(^approximate*):*:functions' ignored-patterns '_*'
+# Provide more processes in completion of programs like killall:
+zstyle ':completion:*:processes-names' command 'ps c -u ${USER} -o command | uniq'
 
-    # Provide more processes in completion of programs like killall:
-    zstyle ':completion:*:processes-names' command 'ps c -u ${USER} -o command | uniq'
+# complete manual by their section
+zstyle ':completion:*:manuals'    separate-sections true
+zstyle ':completion:*:manuals.*'  insert-sections   true
+zstyle ':completion:*:man:*'      menu yes select
 
-    # complete manual by their section
-    zstyle ':completion:*:manuals'    separate-sections true
-    zstyle ':completion:*:manuals.*'  insert-sections   true
-    zstyle ':completion:*:man:*'      menu yes select
+# Search path for sudo completion
+zstyle ':completion:*:sudo:*' command-path /usr/local/sbin \
+                                           /usr/local/bin  \
+                                           /usr/sbin       \
+                                           /usr/bin        \
+                                           /sbin           \
+                                           /bin            \
+                                           /usr/X11R6/bin
 
-    # Search path for sudo completion
-    zstyle ':completion:*:sudo:*' command-path /usr/local/sbin \
-                                               /usr/local/bin  \
-                                               /usr/sbin       \
-                                               /usr/bin        \
-                                               /sbin           \
-                                               /bin            \
-                                               /usr/X11R6/bin
+# provide .. as a completion
+zstyle ':completion:*' special-dirs ..
 
-    # provide .. as a completion
-    zstyle ':completion:*' special-dirs ..
+# Some functions, like _apt and _dpkg, are very slow. We can use a cache in
+# order to speed things up
+zstyle ':completion:*' use-cache  yes
+zstyle ':completion:*:complete:*' cache-path "${HOME}/.zcompdump"
 
-    # Some functions, like _apt and _dpkg, are very slow. We can use a cache in
-    # order to speed things up
-    zstyle ':completion:*' use-cache  yes
-    zstyle ':completion:*:complete:*' cache-path "${HOME}/.zcompdump"
-
-    # Rehash when complete.
-    zstyle ':completion:*' rehash true
-
-    # Completion fixups.
-    compdef _zinit zi
-    compdef _zinit zin
-
-    zinit cdreplay -q
-}
-
-zsh-defer completion-setup
+# Rehash when complete.
+zstyle ':completion:*' rehash true
 
 # Source: https://wiki.archlinux.org/index.php/Zsh#Key_bindings (modified)
 
