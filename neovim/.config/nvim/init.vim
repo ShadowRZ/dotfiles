@@ -54,9 +54,11 @@ let g:airline_theme = 'deus'
 " Theme. {{{
 let base16colorspace=256
 
-if filereadable(expand("~/.vimrc_background"))
-    let base16colorspace=256
-    source ~/.vimrc_background
+if has_key(environ(), "DISPLAY")
+    if filereadable(expand("~/.vimrc_background"))
+        let base16colorspace=256
+        source ~/.vimrc_background
+   endif
 endif
 " }}}
 " Personals {{{
