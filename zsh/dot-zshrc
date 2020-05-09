@@ -6,6 +6,8 @@ zmodload zdharma/zplugin
 # Set up $ZDOTDIR.
 export ZDOTDIR="${HOME}/.zsh"
 
+PS1=
+
 # Options
 
 # History related options.
