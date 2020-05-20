@@ -89,7 +89,8 @@ else
     function zinit () { return 1 }
     function zsh-defer () { return 1 }
     function Zinit-Install () {
-        which git >/dev/null 2>&1 || { print -P "%B%F{red}!! Git was NOT FOUND :(%f%b" >&2 && return 1 }
+        # https://mywiki.wooledge.org/BashFAQ/081
+        whence -p git >/dev/null || { print -P "%B%F{red}!! Git was NOT FOUND :(%f%b" >&2 && return 1 }
         [[ -d "$HOME/.zinit" ]] || command mkdir -p "$HOME/.zinit"
         command git clone https://github.com/zdharma/zinit.git ~/.zinit/bin
         print -P "%B%F{green}=> Zinit was installed ! :) Installing plugins...%f%b"
