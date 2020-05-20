@@ -119,7 +119,6 @@ zsh-defer zinit light-mode for \
     zsh-users/zsh-history-substring-search \
     zdharma/history-search-multi-word \
     voronkovich/gitignore.plugin.zsh \
-    if'[[ -n $DISPLAY || -n $ANDROID_ROOT ]]' chriskempson/base16-shell \
     blockf atpull'zinit creinstall -q .' zsh-users/zsh-completions \
     atload"zicompinit; zicdreplay" zdharma/fast-syntax-highlighting \
     atload"_zsh_autosuggest_start" zsh-users/zsh-autosuggestions \
