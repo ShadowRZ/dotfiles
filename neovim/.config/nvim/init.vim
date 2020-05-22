@@ -48,7 +48,9 @@ Plug 'rhysd/vim-clang-format'
 call plug#end()
 " }}}
 " Airline theme {{{
-let g:airline_powerline_fonts = 1
+if has_key(environ(), "DISPLAY")
+    let g:airline_powerline_fonts = 1
+endif
 let g:airline_theme = 'deus'
 " }}}
 " Theme. {{{

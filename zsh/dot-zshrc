@@ -1,10 +1,13 @@
 ### SPDX-License-Identifier: MIT -*- Sh -*-
 
+# Don't run ~/.zshrc in non interactive shell.
+[[ $- != *i* ]] && return
+
 # Zinit module.
 module_path+=( "$HOME/.zinit/bin/zmodules/Src" )
 zmodload zdharma/zplugin
-# Set up $ZDOTDIR.
-export ZDOTDIR="${HOME}/.zsh"
+# Set up $_ZDOTDIR.
+_ZDOTDIR="${ZDOTDIR:-$HOME}/.zsh"
 
 PS1=
 
@@ -186,8 +189,8 @@ if [[ "$TERM" == (screen*|xterm*|rxvt*|tmux*|putty*|konsole*|gnome*) ]]; then
     add-zsh-hook -Uz preexec preexec-set-terminal-title
 fi
 
-zsh-defer source "${ZDOTDIR}/terminal.zsh"
-zsh-defer source "${ZDOTDIR}/completion.zsh"
+zsh-defer source "${_ZDOTDIR}/terminal.zsh"
+zsh-defer source "${_ZDOTDIR}/completion.zsh"
 
 if [[ -r /proc/mdstat ]]; then
     alias mdstat='cat /proc/mdstat'
