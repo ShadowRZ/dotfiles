@@ -103,6 +103,7 @@ else
 fi
 
 zinit light romkatv/zsh-defer
+zinit light romkatv/powerlevel10k
 
 # Basic LS_COLORS
 [[ -n $DISPLAY || -n $ANDROID_ROOT ]] || eval "$(dircolors -b)"
@@ -125,7 +126,6 @@ zsh-defer zinit light-mode for \
     blockf atpull'zinit creinstall -q .' zsh-users/zsh-completions \
     atload"zicompinit; zicdreplay" zdharma/fast-syntax-highlighting \
     atload"_zsh_autosuggest_start" zsh-users/zsh-autosuggestions \
-    atload"zle redisplay" denysdovhan/spaceship-prompt
 
 # Colored man pages and more.
 export LESS_TERMCAP_mb=$'\E[01;31m'
@@ -136,14 +136,17 @@ export LESS_TERMCAP_so=$'\E[01;44;33m'
 export LESS_TERMCAP_ue=$'\E[0m'
 export LESS_TERMCAP_us=$'\E[01;32m'
 
-# Spaceship
-SPACESHIP_PROMPT_ADD_NEWLINE=false
-SPACESHIP_CHAR_SYMBOL='$ '
-SPACESHIP_CHAR_SYMBOL_ROOT='# '
-SPACESHIP_USER_SHOW=needed
-SPACESHIP_DIR_LOCK_SYMBOL=' [RO]'
-SPACESHIP_EXIT_CODE_SHOW=true
-SPACESHIP_EXIT_CODE_SYMBOL=''
+# Powerlevel10k
+if [[ -f ~/.p10k.zsh ]]; then
+    source ~/.p10k.zsh
+fi
+
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
 
 # You should use
 YSU_MESSAGE_POSITION="after"
