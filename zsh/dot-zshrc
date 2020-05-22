@@ -3,13 +3,17 @@
 # Don't run ~/.zshrc in non interactive shell.
 [[ $- != *i* ]] && return
 
-# Zinit module.
-module_path+=( "$HOME/.zinit/bin/zmodules/Src" )
-zmodload zdharma/zplugin
+PS1=
+
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
 # Set up $_ZDOTDIR.
 _ZDOTDIR="${ZDOTDIR:-$HOME}/.zsh"
-
-PS1=
 
 # Options
 
@@ -103,7 +107,6 @@ else
 fi
 
 zinit light romkatv/zsh-defer
-zinit light romkatv/powerlevel10k
 
 # Basic LS_COLORS
 [[ -n $DISPLAY || -n $ANDROID_ROOT ]] || eval "$(dircolors -b)"
@@ -125,7 +128,7 @@ zsh-defer zinit light-mode for \
     voronkovich/gitignore.plugin.zsh \
     blockf atpull'zinit creinstall -q .' zsh-users/zsh-completions \
     atload"zicompinit; zicdreplay" zdharma/fast-syntax-highlighting \
-    atload"_zsh_autosuggest_start" zsh-users/zsh-autosuggestions \
+    atload"_zsh_autosuggest_start" zsh-users/zsh-autosuggestions
 
 # Colored man pages and more.
 export LESS_TERMCAP_mb=$'\E[01;31m'
@@ -141,12 +144,7 @@ if [[ -f ~/.p10k.zsh ]]; then
     source ~/.p10k.zsh
 fi
 
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
+zinit light romkatv/powerlevel10k
 
 # You should use
 YSU_MESSAGE_POSITION="after"
