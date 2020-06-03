@@ -3,17 +3,11 @@
 # Don't run ~/.zshrc in non interactive shell.
 [[ $- != *i* ]] && return
 
-PS1=
-
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-
-# Set up $_ZDOTDIR.
-_ZDOTDIR="${ZDOTDIR:-$HOME}/.zsh"
+# Zinit module.
+module_path+=( "$HOME/.zinit/bin/zmodules/Src" )
+zmodload zdharma/zplugin &> /dev/null
+# Set up $_zdir.
+_zdir="${ZDOTDIR:-$HOME}/.zsh"
 
 # Options
 
@@ -25,6 +19,7 @@ setopt HIST_FIND_NO_DUPS
 setopt HIST_REDUCE_BLANKS
 setopt EXTENDED_HISTORY
 setopt HIST_FCNTL_LOCK
+setopt HIST_IGNORE_SPACE
 # Completion related options.
 setopt ALWAYS_TO_END
 setopt AUTO_MENU
@@ -94,7 +89,6 @@ if [[ -f "$HOME/.zinit/bin/zinit.zsh" ]]; then
     source "$HOME/.zinit/bin/zinit.zsh"
 else
     function zinit () { return 1 }
-    function zsh-defer () { return 1 }
     function Zinit-Install () {
         # https://mywiki.wooledge.org/BashFAQ/081
         whence -p git >/dev/null || { print -P "%B%F{red}!! Git was NOT FOUND :(%f%b" >&2 && return 1 }
@@ -104,21 +98,31 @@ else
         exec zsh
     }
     print -P "%B%F{yellow}=> Zinit is not installed. Install with \`Zinit-Install'%f%b" >&2
+    return
 fi
 
-zinit light romkatv/zsh-defer
+# Zinit annexes
+zinit light-mode for \
+    zinit-zsh/z-a-bin-gem-node
 
 # Basic LS_COLORS
 [[ -n $DISPLAY || -n $ANDROID_ROOT ]] || eval "$(dircolors -b)"
 
 # Extended LS_COLORS
-zsh-defer zinit atclone"dircolors -b LS_COLORS > c.zsh" atpull'%atclone' pick"c.zsh" nocompile'!' if'[[ -n $DISPLAY || -n $ANDROID_ROOT ]]' light-mode for trapd00r/LS_COLORS
+zinit wait"0c" lucid reset light-mode \
+    atclone"local P=${${(M)OSTYPE:#*darwin*}:+g}
+            \${P}sed -i \
+            '/DIR/c\DIR 38;5;63;1' LS_COLORS; \
+            \${P}dircolors -b LS_COLORS > c.zsh" \
+    atpull'%atclone' pick"c.zsh" nocompile'!' \
+    atload'zstyle ":completion:*" list-colors “${(s.:.)LS_COLORS}”' \
+    if'[[ -n $DISPLAY || -n $ANDROID_ROOT ]]' for trapd00r/LS_COLORS
 
 # Multi-word history search.
 zstyle ":plugin:history-search-multi-word" reset-prompt-protect 1
 
 # Snippets / Plugins.
-zsh-defer zinit light-mode for \
+zinit wait lucid light-mode for \
     OMZ::plugins/git/git.plugin.zsh \
     OMZ::plugins/command-not-found/command-not-found.plugin.zsh \
     OMZ::plugins/hitokoto/hitokoto.plugin.zsh \
@@ -128,7 +132,36 @@ zsh-defer zinit light-mode for \
     voronkovich/gitignore.plugin.zsh \
     blockf atpull'zinit creinstall -q .' zsh-users/zsh-completions \
     atload"zicompinit; zicdreplay" zdharma/fast-syntax-highlighting \
-    atload"_zsh_autosuggest_start" zsh-users/zsh-autosuggestions
+    atload"_zsh_autosuggest_start" zsh-users/zsh-autosuggestions \
+    chriskempson/base16-shell \
+    zdharma/zui \
+    zinit-zsh/zinit-console \
+    as'program' pick'fasd' atclone'./fasd --init auto >! .fasd-init.zsh' src'.fasd-init.zsh' atpull'%atclone' clvv/fasd
+
+# Git plugins.
+zinit as"null" wait"1" lucid light-mode for \
+    sbin Fakerr/git-recall \
+    sbin cloneopts paulirish/git-open \
+    sbin paulirish/git-recent \
+    sbin davidosomething/git-my \
+    sbin atload"export _MENU_THEME=legacy" arzzen/git-quick-stats \
+    sbin iwata/git-now \
+    make"PREFIX=$ZPFX install" tj/git-extras \
+    sbin"bin/git-dsf;bin/diff-so-fancy" zdharma/zsh-diff-so-fancy \
+    sbin"git-url;git-guclone" make"GITURL_NO_CGITURL=1" zdharma/git-url
+
+# Powerlevel10k
+# Placed here to allow zinit to output things when cloning.
+
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
+[[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
+zinit light romkatv/powerlevel10k
 
 # Colored man pages and more.
 export LESS_TERMCAP_mb=$'\E[01;31m'
@@ -138,13 +171,6 @@ export LESS_TERMCAP_se=$'\E[0m'
 export LESS_TERMCAP_so=$'\E[01;44;33m'
 export LESS_TERMCAP_ue=$'\E[0m'
 export LESS_TERMCAP_us=$'\E[01;32m'
-
-# Powerlevel10k
-if [[ -f ~/.p10k.zsh ]]; then
-    source ~/.p10k.zsh
-fi
-
-zinit light romkatv/powerlevel10k
 
 # You should use
 YSU_MESSAGE_POSITION="after"
@@ -190,8 +216,16 @@ if [[ "$TERM" == (screen*|xterm*|rxvt*|tmux*|putty*|konsole*|gnome*) ]]; then
     add-zsh-hook -Uz preexec preexec-set-terminal-title
 fi
 
-zsh-defer source "${_ZDOTDIR}/terminal.zsh"
-zsh-defer source "${_ZDOTDIR}/completion.zsh"
+source "${_zdir}/terminal.zsh"
+source "${_zdir}/completion.zsh"
+
+# Remember recent dirs.
+autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
+add-zsh-hook chpwd chpwd_recent_dirs
+zstyle ':completion:*:*:cdr:*:*' menu selection
+
+# Git user commands.
+zstyle ':completion:*:*:git:*' user-commands ${${(M)${(k)commands}:#git-*}/git-/}
 
 if [[ -r /proc/mdstat ]]; then
     alias mdstat='cat /proc/mdstat'
