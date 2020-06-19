@@ -79,3 +79,20 @@ zle -N foreground-last-job
 bindkey '^Z' foreground-last-job
 bindkey -M emacs '^Z' foreground-last-job
 bindkey -M viins '^Z' foreground-last-job
+
+# Customized word selecting.
+for f in backward-kill-word \
+         backward-word \
+         capitalize-word \
+         down-case-word \
+         forward-word \
+         kill-word \
+         transpose-words \
+         up-case-word; do
+    autoload -Uz $f-match
+    zle -N $f $f-match
+done
+
+autoload -Uz select-word-style
+select-word-style shell
+# vim:ft=zsh:ts=4:sw=4

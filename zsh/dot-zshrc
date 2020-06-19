@@ -42,9 +42,26 @@ setopt TRANSIENT_RPROMPT
 # Prompt.
 setopt PROMPT_SUBST
 
+autoload -Uz colors
+colors
+
+# Shell used paramters.
 HISTFILE=~/.zsh_history
 HISTSIZE=35000
 SAVEHIST="$HISTSIZE"
+# Spelling correct prompt.
+SPROMPT="%B%F{yellow}[Correct]%f%b %B%F{red}%R%f%b -> %B%F{green}%r%f%b ? [%B(N)%b/y/a/e]"
+REPORTTIME=5
+CORRECT_IGNORE='_*'
+# Time format.
+() {
+    local white_b=$fg_bold[white] yellow_b=$fg_bold[yellow] blue=$fg[blue] rst=$reset_color
+    TIMEFMT=(
+        "${yellow_b}EST=%*Es$rst $white_b%J$rst"$'\n' # First line
+        "${yellow_b} CPU$rst: USR: $blue%U$rst SYS: $blue%S$rst PER:$blue%P$rst"$'\n' # Second line
+        "${yellow_b} MEM$rst: $blue%M$rst" # Third line
+    )
+}
 
 bindkey -e
 
@@ -133,7 +150,7 @@ zinit wait lucid light-mode for \
     blockf atpull'zinit creinstall -q .' zsh-users/zsh-completions \
     atload"zicompinit; zicdreplay" zdharma/fast-syntax-highlighting \
     atload"_zsh_autosuggest_start" zsh-users/zsh-autosuggestions \
-    chriskempson/base16-shell \
+    if'[[ -n $DISPLAY || -n $ANDROID_ROOT ]]' chriskempson/base16-shell \
     zdharma/zui \
     zinit-zsh/zinit-console \
     as'program' pick'fasd' atclone'./fasd --init auto >! .fasd-init.zsh' src'.fasd-init.zsh' atpull'%atclone' clvv/fasd
@@ -223,6 +240,14 @@ source "${_zdir}/completion.zsh"
 autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
 add-zsh-hook chpwd chpwd_recent_dirs
 zstyle ':completion:*:*:cdr:*:*' menu selection
+
+# Shell MIME.
+autoload -Uz zsh-mime-setup pick-web-browser
+alias -s html=pick-web-browser
+zsh-mime-setup
+zstyle ':mime:*' mailcap ~/.mailcap
+zstyle ':mime:*' execute-never "/run/media/${USER}/*"
+zstyle ':mime:*' never-background true
 
 # Git user commands.
 zstyle ':completion:*:*:git:*' user-commands ${${(M)${(k)commands}:#git-*}/git-/}
