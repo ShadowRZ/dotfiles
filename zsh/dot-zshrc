@@ -3,6 +3,9 @@
 # Don't run ~/.zshrc in non interactive shell.
 [[ $- != *i* ]] && return
 
+# Start zprof.
+(( $+NAVIFUTABA_ENABLE_ZPROF )) && zmodload zsh/zprof
+
 # Zinit module.
 module_path+=( "$HOME/.zinit/bin/zmodules/Src" )
 zmodload zdharma/zplugin &> /dev/null
@@ -90,9 +93,9 @@ zle -N self-insert url-quote-magic
 # Original name: toogle-uqm
 function self-insert-switch-url-quote-magic () {
     if zle -l self-insert; then
-        zle -A .self-insert self-insert && zle -M "=> Disabled url-quote-magic"
+        zle -A .self-insert self-insert && zle -M "[ZLE] Disabled url-quote-magic"
     else
-        zle -N self-insert url-quote-magic && zle -M "=> Enabled url-quote-magic"
+        zle -N self-insert url-quote-magic && zle -M "[ZLE] Enabled url-quote-magic"
     fi
 }
 zle -N self-insert-switch-url-quote-magic
@@ -108,32 +111,28 @@ else
     function zinit () { return 1 }
     function Zinit-Install () {
         # https://mywiki.wooledge.org/BashFAQ/081
-        whence -p git >/dev/null || { print -P "%B%F{red}!! Git was NOT FOUND :(%f%b" >&2 && return 1 }
+        whence -p git >/dev/null || { print -P "%B%F{red}[Zshrc]%f Git was NOT FOUND :(%b" >&2 && return 1 }
         [[ -d "$HOME/.zinit" ]] || command mkdir -p "$HOME/.zinit"
         command git clone https://github.com/zdharma/zinit.git ~/.zinit/bin
-        print -P "%B%F{green}=> Zinit was installed ! :) Installing plugins...%f%b"
+        print -P "%B%F{green}[Zshrc]%f Zinit was installed ! :) Installing plugins...%b"
         exec zsh
     }
-    print -P "%B%F{yellow}=> Zinit is not installed. Install with \`Zinit-Install'%f%b" >&2
+    print -P "%B%F{yellow}[Zshrc]%f Zinit is not installed. Install with Zinit-Install%b" >&2
     return
 fi
 
 # Zinit annexes
 zinit light-mode for \
+    zinit-zsh/z-a-as-monitor \
+    zinit-zsh/z-a-patch-dl \
     zinit-zsh/z-a-bin-gem-node
 
 # Basic LS_COLORS
 [[ -n $DISPLAY || -n $ANDROID_ROOT ]] || eval "$(dircolors -b)"
 
 # Extended LS_COLORS
-zinit wait"0c" lucid reset light-mode \
-    atclone"local P=${${(M)OSTYPE:#*darwin*}:+g}
-            \${P}sed -i \
-            '/DIR/c\DIR 38;5;63;1' LS_COLORS; \
-            \${P}dircolors -b LS_COLORS > c.zsh" \
-    atpull'%atclone' pick"c.zsh" nocompile'!' \
-    atload'zstyle ":completion:*" list-colors “${(s.:.)LS_COLORS}”' \
-    if'[[ -n $DISPLAY || -n $ANDROID_ROOT ]]' for trapd00r/LS_COLORS
+# Uses package system to reduce code.
+zinit if'[[ -n $DISPLAY || -n $ANDROID_ROOT ]]' pack for trapd00r/LS_COLORS
 
 # Multi-word history search.
 zstyle ":plugin:history-search-multi-word" reset-prompt-protect 1
@@ -156,7 +155,7 @@ zinit wait lucid light-mode for \
     as'program' pick'fasd' atclone'./fasd --init auto >! .fasd-init.zsh' src'.fasd-init.zsh' atpull'%atclone' clvv/fasd
 
 # Git plugins.
-zinit as"null" wait"1" lucid light-mode for \
+zinit as"null" lucid light-mode for \
     sbin Fakerr/git-recall \
     sbin cloneopts paulirish/git-open \
     sbin paulirish/git-recent \
@@ -244,7 +243,7 @@ zstyle ':completion:*:*:cdr:*:*' menu selection
 # Shell MIME.
 autoload -Uz zsh-mime-setup pick-web-browser
 alias -s html=pick-web-browser
-zsh-mime-setup
+sched +0 zsh-mime-setup
 zstyle ':mime:*' mailcap ~/.mailcap
 zstyle ':mime:*' execute-never "/run/media/${USER}/*"
 zstyle ':mime:*' never-background true

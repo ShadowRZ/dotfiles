@@ -10,14 +10,14 @@ zstyle ':completion:*:complete:-command-::commands' ignored-patterns '(*\~)'
 
 # start menu completion only if it could find no unambiguous initial string
 zstyle ':completion:*:correct:*'       insert-unambiguous true
-zstyle ':completion:*:corrections'     format $'%{\e[0;31m%}%d (errors: %e)%{\e[0m%}'
+zstyle ':completion:*:corrections'     format '%d (errors: %e)'
 zstyle ':completion:*:correct:*'       original true
 
 # activate color-completion
 zstyle ':completion:*:default'         list-colors ${(s.:.)LS_COLORS}
 
 # format on completion
-zstyle ':completion:*:descriptions'    format $'%{\e[0;31m%}## From %B%d%b%{\e[0m%}'
+zstyle ':completion:*:descriptions'    format '%B%F{yellow}[Complete]%f%b%F{red} From %B%d%b%f'
 
 # automatically complete 'cd -<tab>' and 'cd -<ctrl-d>' with menu
 zstyle ':completion:*:*:cd:*:directory-stack' menu yes select
@@ -62,7 +62,7 @@ zstyle ':completion:*'                 verbose true
 zstyle ':completion:*:-command-:*:'    verbose false
 
 # set format for warnings
-zstyle ':completion:*:warnings'        format $'%{\e[0;31m%}## No matches found. :(%{\e[0m%}'
+zstyle ':completion:*:warnings'        format '%B%F{yellow}[Complete]%f%b%F{red} No matches found. :(%f'
 
 # define files to ignore for zcompile
 zstyle ':completion:*:*:zcompile:*'    ignored-patterns '(*~|*.zwc)'

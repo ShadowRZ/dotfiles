@@ -71,7 +71,7 @@ function foreground-last-job () {
         BUFFER="${BUFFER}fg"
         zle .accept-line
     else
-        zle -M 'No background jobs. Doing nothing.'
+        zle -M '[ZLE] No background jobs. Doing nothing.'
     fi
 }
 zle -N foreground-last-job
