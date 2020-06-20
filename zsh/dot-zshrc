@@ -152,6 +152,7 @@ zinit wait lucid light-mode for \
     if'[[ -n $DISPLAY || -n $ANDROID_ROOT ]]' chriskempson/base16-shell \
     zdharma/zui \
     zinit-zsh/zinit-console \
+    if'(( $+commands[fzf] ))' wfxr/forgit \
     as'program' pick'fasd' atclone'./fasd --init auto >! .fasd-init.zsh' src'.fasd-init.zsh' atpull'%atclone' clvv/fasd
 
 # Git plugins.
