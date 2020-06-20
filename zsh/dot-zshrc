@@ -199,6 +199,12 @@ autoload -U edit-command-line
 zle -N edit-command-line
 bindkey '^x^e' edit-command-line
 
+# Disable globs.
+# These functions works better without globs.
+(( $+commands[fd] )) && alias fd='noglob command fd'
+(( $+commands[find] )) && alias find='noglob command find'
+(( $+functions[zmv] )) && alias zmv='noglob zmv'
+
 # Help
 unalias run-help
 autoload -Uz run-help
