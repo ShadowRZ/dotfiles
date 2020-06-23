@@ -1,0 +1,9 @@
+### SPDX-License-Identifier: MIT -*- Sh -*-
+
+# Load user abbrevs.
+[[ -f ~/.zabbrevs ]] && source ~/.zabbrevs
+
+# Load abbrevs.
+(( $+zdn_top )) && zsh_directory_name_generic "$@"
+
+# vim:ft=zsh

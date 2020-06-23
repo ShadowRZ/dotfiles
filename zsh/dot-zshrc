@@ -243,8 +243,8 @@ source "${_zdir}/terminal.zsh"
 source "${_zdir}/completion.zsh"
 
 # Remember recent dirs.
-autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
-add-zsh-hook chpwd chpwd_recent_dirs
+autoload -Uz chpwd_recent_dirs cdr
+add-zsh-hook -Uz chpwd chpwd_recent_dirs
 zstyle ':completion:*:*:cdr:*:*' menu selection
 
 # Shell MIME.
@@ -254,6 +254,11 @@ sched +0 zsh-mime-setup
 zstyle ':mime:*' mailcap ~/.mailcap
 zstyle ':mime:*' execute-never "/run/media/${USER}/*"
 zstyle ':mime:*' never-background true
+
+# Abbreved dirs.
+autoload -Uz zsh_directory_name_generic zdn_mywrapper
+add-zsh-hook -Uz zsh_directory_name zdn_mywrapper
+add-zsh-hook -Uz zsh_directory_name zsh_directory_name_cdr
 
 # Git user commands.
 zstyle ':completion:*:*:git:*' user-commands ${${(M)${(k)commands}:#git-*}/git-/}

@@ -1,1 +1,2 @@
+fpath+=("$HOME/.zfunctions")
 [[ -f ~/.zshenv.local ]] && source ~/.zshenv.local
