@@ -139,9 +139,7 @@ zstyle ":plugin:history-search-multi-word" reset-prompt-protect 1
 
 # Snippets / Plugins.
 zinit wait lucid light-mode for \
-    OMZ::plugins/git/git.plugin.zsh \
-    OMZ::plugins/command-not-found/command-not-found.plugin.zsh \
-    OMZ::plugins/hitokoto/hitokoto.plugin.zsh \
+    OMZP::git OMZP::command-not-found OMZP::hitokoto \
     MichaelAquilina/zsh-you-should-use \
     zsh-users/zsh-history-substring-search \
     zdharma/history-search-multi-word \
@@ -153,10 +151,10 @@ zinit wait lucid light-mode for \
     zdharma/zui \
     zinit-zsh/zinit-console \
     if'(( $+commands[fzf] ))' wfxr/forgit \
-    as'program' pick'fasd' atclone'./fasd --init auto >! .fasd-init.zsh' src'.fasd-init.zsh' atpull'%atclone' clvv/fasd
+    sbin atclone'./fasd --init auto >! .fasd-init.zsh' src'.fasd-init.zsh' atpull'%atclone' clvv/fasd
 
 # Git plugins.
-zinit as"null" lucid light-mode for \
+zinit as"null" wait'1' lucid light-mode for \
     sbin Fakerr/git-recall \
     sbin cloneopts paulirish/git-open \
     sbin paulirish/git-recent \
