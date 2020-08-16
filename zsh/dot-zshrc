@@ -23,12 +23,16 @@ setopt HIST_REDUCE_BLANKS
 setopt EXTENDED_HISTORY
 setopt HIST_FCNTL_LOCK
 setopt HIST_IGNORE_SPACE
+setopt SHARE_HISTORY
 # Completion related options.
 setopt ALWAYS_TO_END
 setopt AUTO_MENU
 unsetopt MENU_COMPLETE
 # Navigation related options.
 setopt PUSHD_MINUS
+setopt PUSHD_IGNORE_DUPS
+setopt PUSHD_SILENT
+setopt PUSHD_TO_HOME
 setopt AUTO_CD
 setopt AUTO_PUSHD
 # Globbing related options.
@@ -40,6 +44,9 @@ setopt INTERACTIVE_COMMENTS
 setopt RC_QUOTES
 setopt CORRECT
 unsetopt FLOW_CONTROL
+# Jobs.
+setopt LONG_LIST_JOBS
+setopt NO_BG_NICE
 # Remove any RPROMPT after executing command.
 setopt TRANSIENT_RPROMPT
 # Prompt.
@@ -144,18 +151,15 @@ zinit wait lucid light-mode for \
     zsh-users/zsh-history-substring-search \
     zdharma/history-search-multi-word \
     voronkovich/gitignore.plugin.zsh \
+    atload"ZINIT[COMPINIT_OPTS]=-C; zicompinit; zicdreplay" zdharma/fast-syntax-highlighting \
     blockf atpull'zinit creinstall -q .' zsh-users/zsh-completions \
-    atload"zicompinit; zicdreplay" zdharma/fast-syntax-highlighting \
-    atload"_zsh_autosuggest_start" zsh-users/zsh-autosuggestions \
-    if'[[ -n $DISPLAY || -n $ANDROID_ROOT ]]' chriskempson/base16-shell \
+    atload"!_zsh_autosuggest_start" zsh-users/zsh-autosuggestions \
     zdharma/zui \
     zinit-zsh/zinit-console \
-    if'(( $+commands[fzf] ))' wfxr/forgit \
     sbin atclone'./fasd --init auto >! .fasd-init.zsh' src'.fasd-init.zsh' atpull'%atclone' clvv/fasd
 
 # Git plugins.
 zinit as"null" wait'1' lucid light-mode for \
-    sbin Fakerr/git-recall \
     sbin cloneopts paulirish/git-open \
     sbin paulirish/git-recent \
     sbin davidosomething/git-my \
@@ -163,6 +167,7 @@ zinit as"null" wait'1' lucid light-mode for \
     sbin iwata/git-now \
     make"PREFIX=$ZPFX install" tj/git-extras \
     sbin"bin/git-dsf;bin/diff-so-fancy" zdharma/zsh-diff-so-fancy \
+    has'fzf' if'[[ -n $ANDROID_ROOT ]]' wfxr/forgit \
     sbin"git-url;git-guclone" make"GITURL_NO_CGITURL=1" zdharma/git-url
 
 # Powerlevel10k
