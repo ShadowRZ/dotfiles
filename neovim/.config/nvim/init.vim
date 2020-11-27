@@ -8,7 +8,7 @@ set termguicolors
 set mouse=a
 
 " Vim Plugins / vim-plug {{{
-call plug#begin()
+call plug#begin(stdpath('data') . '/plugged')
 
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-surround'

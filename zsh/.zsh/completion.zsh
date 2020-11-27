@@ -10,7 +10,7 @@ zstyle ':completion:*:complete:-command-::commands' ignored-patterns '(*\~)'
 
 # start menu completion only if it could find no unambiguous initial string
 zstyle ':completion:*:correct:*'       insert-unambiguous true
-zstyle ':completion:*:corrections'     format '%d (errors: %e)'
+zstyle ':completion:*:corrections'     format '%B%F{yellow}[Complete]%f%b%F{red} From %B%d (errors: %e)%b%f'
 zstyle ':completion:*:correct:*'       original true
 
 # activate color-completion
@@ -98,5 +98,8 @@ zstyle ':completion:*:complete:*' cache-path "${HOME}/.zcompdump"
 
 # Rehash when complete.
 zstyle ':completion:*' rehash true
+
+# Select a completer
+zstyle ':completion:*' completer _complete _correct _approximate
 
 # vim:ft=zsh:ts=4:sw=4

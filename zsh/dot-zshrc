@@ -27,6 +27,7 @@ setopt SHARE_HISTORY
 # Completion related options.
 setopt ALWAYS_TO_END
 setopt AUTO_MENU
+setopt LIST_TYPES
 unsetopt MENU_COMPLETE
 # Navigation related options.
 setopt PUSHD_MINUS
