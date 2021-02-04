@@ -9,6 +9,7 @@
 # Zinit module.
 module_path+=( "$HOME/.zinit/bin/zmodules/Src" )
 zmodload zdharma/zplugin &> /dev/null
+zmodload lilydjwg/subreap &> /dev/null && subreap
 # Set up $_zdir.
 _zdir="${ZDOTDIR:-$HOME}/.zsh"
 
@@ -16,18 +17,20 @@ _zdir="${ZDOTDIR:-$HOME}/.zsh"
 
 # History related options.
 setopt HIST_VERIFY
-setopt INC_APPEND_HISTORY
+setopt INC_APPEND_HISTORY_TIME
 setopt HIST_EXPIRE_DUPS_FIRST
 setopt HIST_FIND_NO_DUPS
+setopt HIST_SAVE_NO_DUPS
+setopt HIST_IGNORE_DUPS
 setopt HIST_REDUCE_BLANKS
 setopt EXTENDED_HISTORY
 setopt HIST_FCNTL_LOCK
 setopt HIST_IGNORE_SPACE
-setopt SHARE_HISTORY
 # Completion related options.
 setopt ALWAYS_TO_END
 setopt AUTO_MENU
 setopt LIST_TYPES
+setopt LIST_PACKED
 unsetopt MENU_COMPLETE
 # Navigation related options.
 setopt PUSHD_MINUS
@@ -37,14 +40,16 @@ setopt PUSHD_TO_HOME
 setopt AUTO_CD
 setopt AUTO_PUSHD
 # Globbing related options.
+setopt BAD_PATTERN
 setopt EXTENDED_GLOB
 setopt NOMATCH
+setopt MAGIC_EQUAL_SUBST
 # I/O related options.
 setopt NO_CLOBBER
 setopt INTERACTIVE_COMMENTS
 setopt RC_QUOTES
 setopt CORRECT
-unsetopt FLOW_CONTROL
+unsetopt FLOW_CONTROL; stty -ixon
 # Jobs.
 setopt LONG_LIST_JOBS
 setopt NO_BG_NICE
@@ -52,6 +57,8 @@ setopt NO_BG_NICE
 setopt TRANSIENT_RPROMPT
 # Prompt.
 setopt PROMPT_SUBST
+# ZLE.
+unsetopt BEEP
 
 autoload -Uz colors
 colors

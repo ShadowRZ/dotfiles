@@ -1,6 +1,6 @@
 ### SPDX-License-Identifier: MIT -*- Sh -*-
 
-# Completion system. (Modified from grml)
+# Completion system. (Modified from grml and https://github.com/lilydjwg/dotzsh)
 
 # allow one error for every three characters typed in approximate completer
 zstyle ':completion:*:approximate:'    max-errors 'reply=( $((($#PREFIX+$#SUFFIX)/3 )) numeric )'
@@ -48,7 +48,7 @@ zstyle ':completion:*:options'         auto-description '%d'
 zstyle ':completion:*:options'         description 'yes'
 
 # on processes completion complete all user processes
-zstyle ':completion:*:processes'       command 'ps -au$USER'
+zstyle ':completion:*:processes'       command 'ps -afu$USER'
 
 # offer indexes before parameters in subscripts
 zstyle ':completion:*:*:-subscript-:*' tag-order indexes parameters
@@ -90,6 +90,7 @@ zstyle ':completion:*:sudo:*' command-path /usr/local/sbin \
 
 # provide .. as a completion
 zstyle ':completion:*' special-dirs ..
+zstyle ':completion:*:cd:*' ignore-parents parent pwd
 
 # Some functions, like _apt and _dpkg, are very slow. We can use a cache in
 # order to speed things up
@@ -100,6 +101,6 @@ zstyle ':completion:*:complete:*' cache-path "${HOME}/.zcompdump"
 zstyle ':completion:*' rehash true
 
 # Select a completer
-zstyle ':completion:*' completer _complete _correct _approximate
+zstyle ':completion:*' completer _complete _match _correct _approximate _expand_alias _ignored _files
 
 # vim:ft=zsh:ts=4:sw=4
