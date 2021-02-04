@@ -122,54 +122,27 @@ else
         whence -p git >/dev/null || { print -P "%B%F{red}[Zshrc]%f Git was NOT FOUND :(%b" >&2 && return 1 }
         [[ -d "$HOME/.zinit" ]] || command mkdir -p "$HOME/.zinit"
         command git clone https://github.com/zdharma/zinit.git ~/.zinit/bin
-        print -P "%B%F{green}[Zshrc]%f Zinit was installed ! :) Installing plugins...%b"
-        exec zsh
+        print -P "%B%F{green}[Zshrc]%f Zinit was installed ! :)%b"
     }
     print -P "%B%F{yellow}[Zshrc]%f Zinit is not installed. Install with Zinit-Install%b" >&2
     return
 fi
 
-# Zinit annexes
-zinit light-mode for \
-    zinit-zsh/z-a-as-monitor \
-    zinit-zsh/z-a-patch-dl \
-    zinit-zsh/z-a-bin-gem-node
-
-# Basic LS_COLORS
-[[ -n $DISPLAY || -n $ANDROID_ROOT ]] || eval "$(dircolors -b)"
-
-# Extended LS_COLORS
-# Uses package system to reduce code.
-zinit if'[[ -n $DISPLAY || -n $ANDROID_ROOT ]]' pack for trapd00r/LS_COLORS
+# Source ~/.zdircolors.
+[[ -f ~/.zdircolors ]] && source ~/.zdircolors
 
 # Multi-word history search.
 zstyle ":plugin:history-search-multi-word" reset-prompt-protect 1
 
 # Snippets / Plugins.
-zinit wait lucid light-mode for \
-    OMZP::git OMZP::command-not-found OMZP::hitokoto \
-    MichaelAquilina/zsh-you-should-use \
+zinit wait lucid depth=1 light-mode for \
+    OMZP::git OMZP::command-not-found \
     zsh-users/zsh-history-substring-search \
     zdharma/history-search-multi-word \
-    voronkovich/gitignore.plugin.zsh \
     atload"ZINIT[COMPINIT_OPTS]=-C; zicompinit; zicdreplay" zdharma/fast-syntax-highlighting \
     blockf atpull'zinit creinstall -q .' zsh-users/zsh-completions \
     atload"!_zsh_autosuggest_start" zsh-users/zsh-autosuggestions \
-    zdharma/zui \
-    zinit-zsh/zinit-console \
-    sbin atclone'./fasd --init auto >! .fasd-init.zsh' src'.fasd-init.zsh' atpull'%atclone' clvv/fasd
-
-# Git plugins.
-zinit as"null" wait'1' lucid light-mode for \
-    sbin cloneopts paulirish/git-open \
-    sbin paulirish/git-recent \
-    sbin davidosomething/git-my \
-    sbin atload"export _MENU_THEME=legacy" arzzen/git-quick-stats \
-    sbin iwata/git-now \
-    make"PREFIX=$ZPFX install" tj/git-extras \
-    sbin"bin/git-dsf;bin/diff-so-fancy" zdharma/zsh-diff-so-fancy \
-    has'fzf' if'[[ -n $ANDROID_ROOT ]]' wfxr/forgit \
-    sbin"git-url;git-guclone" make"GITURL_NO_CGITURL=1" zdharma/git-url
+    as'program' pick'bin/git-dsf' zdharma/zsh-diff-so-fancy
 
 # Powerlevel10k
 # Placed here to allow zinit to output things when cloning.
@@ -182,7 +155,7 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
 fi
 
 [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
-zinit light romkatv/powerlevel10k
+zinit depth=1 light-mode for romkatv/powerlevel10k
 
 # Colored man pages and more.
 export LESS_TERMCAP_mb=$'\E[01;31m'
@@ -192,10 +165,6 @@ export LESS_TERMCAP_se=$'\E[0m'
 export LESS_TERMCAP_so=$'\E[01;44;33m'
 export LESS_TERMCAP_ue=$'\E[0m'
 export LESS_TERMCAP_us=$'\E[01;32m'
-
-# You should use
-YSU_MESSAGE_POSITION="after"
-YSU_IGNORED_ALIASES=("zi" "zin" "zini" "zpl" "zplg" "g" "vim")
 
 # Others
 autoload -Uz zmv
@@ -243,26 +212,8 @@ if [[ "$TERM" == (screen*|xterm*|rxvt*|tmux*|putty*|konsole*|gnome*) ]]; then
     add-zsh-hook -Uz preexec preexec-set-terminal-title
 fi
 
-source "${_zdir}/terminal.zsh"
-source "${_zdir}/completion.zsh"
-
-# Remember recent dirs.
-autoload -Uz chpwd_recent_dirs cdr
-add-zsh-hook -Uz chpwd chpwd_recent_dirs
-zstyle ':completion:*:*:cdr:*:*' menu selection
-
-# Shell MIME.
-autoload -Uz zsh-mime-setup pick-web-browser
-alias -s html=pick-web-browser
-sched +0 zsh-mime-setup
-zstyle ':mime:*' mailcap ~/.mailcap
-zstyle ':mime:*' execute-never "/run/media/${USER}/*"
-zstyle ':mime:*' never-background true
-
-# Abbreved dirs.
-autoload -Uz zsh_directory_name_generic zdn_mywrapper
-add-zsh-hook -Uz zsh_directory_name zdn_mywrapper
-add-zsh-hook -Uz zsh_directory_name zsh_directory_name_cdr
+sched +0 source "${_zdir}/terminal.zsh"
+sched +0 source "${_zdir}/completion.zsh"
 
 # Git user commands.
 zstyle ':completion:*:*:git:*' user-commands ${${(M)${(k)commands}:#git-*}/git-/}
@@ -297,8 +248,6 @@ export GREP_COLORS="mt=$GREP_COLOR" # GNU.
 alias grep="${aliases[grep]:-grep} --color=auto"
 
 # Load user config.
-if [[ -f ~/.zshrc.local ]]; then
-    source ~/.zshrc.local
-fi
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
 
 # vim:ft=zsh:ts=4:sw=4
