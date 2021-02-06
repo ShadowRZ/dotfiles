@@ -92,29 +92,10 @@ if [ $VTE_VERSION ]; then
     source /etc/profile.d/vte.sh
 fi
 
-alias edit="$EDITOR"
-alias vim=nvim
-
 # Quote URL.
-# Please note, both url-quote-magic and bracketed-paste-url-magic are loaded.
-
 # https://archive.zhimingwang.org/blog/2015-09-21-zsh-51-and-bracketed-paste.html
 autoload -Uz bracketed-paste-url-magic
 zle -N bracketed-paste bracketed-paste-url-magic
-
-# Modified from https://github.com/lilydjwg/dotzsh/blob/master/zshrc
-autoload -Uz url-quote-magic
-zle -N self-insert url-quote-magic
-# Original name: toogle-uqm
-function self-insert-switch-url-quote-magic () {
-    if zle -l self-insert; then
-        zle -A .self-insert self-insert && zle -M "[ZLE] Disabled url-quote-magic"
-    else
-        zle -N self-insert url-quote-magic && zle -M "[ZLE] Enabled url-quote-magic"
-    fi
-}
-zle -N self-insert-switch-url-quote-magic
-bindkey '^X$' self-insert-switch-url-quote-magic
 
 # zinit.
 # https://github.com/zdharma/zinit
@@ -136,23 +117,28 @@ else
 fi
 
 # Source ~/.zdircolors.
-[[ -f ~/.zdircolors ]] && source ~/.zdircolors
+[[ -f ~/.zdircolors ]] && source ~/.zdircolors || print -P "%B%F{yellow}[Zshrc]%f %F{white}~/.zdircolors%f was not found. You may lost file colors.%b\n%B%F{yellow}[Zshrc]%f Generate a new %F{white}~/.zdircolors%f with %F{white}dircolors -b /path/to/LS_COLORS > ~/.zdircolors%f so it will be loaded.%f" >&2
 
 # Multi-word history search.
 zstyle ":plugin:history-search-multi-word" reset-prompt-protect 1
 
 # Snippets / Plugins.
+export ZSH_AUTOSUGGEST_USE_ASYNC=true
+
 zinit wait lucid depth=1 light-mode for \
-    OMZP::git OMZP::command-not-found \
+    OMZP::{git,command-not-found,sudo} OMZL::directories.zsh\
     zsh-users/zsh-history-substring-search \
     zdharma/history-search-multi-word \
+    as'program' pick'bin/git-dsf' zdharma/zsh-diff-so-fancy \
+    agkozak/zsh-z \
     atload"ZINIT[COMPINIT_OPTS]=-C; zicompinit; zicdreplay" zdharma/fast-syntax-highlighting \
     blockf atpull'zinit creinstall -q .' zsh-users/zsh-completions \
     atload"!_zsh_autosuggest_start" zsh-users/zsh-autosuggestions \
-    as'program' pick'bin/git-dsf' zdharma/zsh-diff-so-fancy
 
 # Powerlevel10k
 # Placed here to allow zinit to output things when cloning.
+
+[[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh || print -P "%B%F{yellow}[Zshrc]%f The default prompt of Powerlevel10k will be loaded because no %F{white}~/.p10k.zsh%f was found.%b\n%B%F{yellow}[Zshrc]%f Type %F{white}p10k configure%f to configure Powerlevel10k." >&2
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
@@ -161,7 +147,7 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-[[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
+POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true
 zinit depth=1 light-mode for romkatv/powerlevel10k
 
 # Colored man pages and more.
@@ -179,12 +165,6 @@ autoload -Uz zargs
 autoload -U edit-command-line
 zle -N edit-command-line
 bindkey '^x^e' edit-command-line
-
-# Disable globs.
-# These functions works better without globs.
-(( $+commands[fd] )) && alias fd='noglob command fd'
-(( $+commands[find] )) && alias find='noglob command find'
-(( $+functions[zmv] )) && alias zmv='noglob zmv'
 
 # Help
 unalias run-help
@@ -219,40 +199,12 @@ if [[ "$TERM" == (screen*|xterm*|rxvt*|tmux*|putty*|konsole*|gnome*) ]]; then
     add-zsh-hook -Uz preexec preexec-set-terminal-title
 fi
 
+source "${_zdir}/misc.zsh"
 sched +0 source "${_zdir}/terminal.zsh"
 sched +0 source "${_zdir}/completion.zsh"
 
 # Git user commands.
 zstyle ':completion:*:*:git:*' user-commands ${${(M)${(k)commands}:#git-*}/git-/}
-
-if [[ -r /proc/mdstat ]]; then
-    alias mdstat='cat /proc/mdstat'
-fi
-
-alias ...='cd ../../'
-
-# From Prezto.
-
-# BSD ls colors.
-export LSCOLORS='exfxcxdxbxGxDxabagacad'
-
-alias ls='command ls --color=auto'
-alias l='ls -1A'         # Lists in one column, hidden files.
-alias ll='ls -lh'        # Lists human readable sizes.
-alias lr='ll -R'         # Lists human readable sizes, recursively.
-alias la='ll -A'         # Lists human readable sizes, hidden files.
-alias lm='la | "$PAGER"' # Lists human readable sizes, hidden files through pager.
-alias lx='ll -XB'        # Lists sorted by extension (GNU only).
-alias lk='ll -Sr'        # Lists sorted by size, largest last.
-alias lt='ll -tr'        # Lists sorted by date, most recent last.
-alias lc='lt -c'         # Lists sorted by date, most recent last, shows change time.
-alias lu='lt -u'         # Lists sorted by date, most recent last, shows access time.
-
-# Grep colors.
-export GREP_COLOR='37;45'           # BSD.
-export GREP_COLORS="mt=$GREP_COLOR" # GNU.
-
-alias grep="${aliases[grep]:-grep} --color=auto"
 
 # Load user config.
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
