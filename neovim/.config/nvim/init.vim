@@ -18,7 +18,6 @@ Plug 'chriskempson/base16-vim'
 Plug 'tpope/vim-vinegar'
 Plug 'xolox/vim-notes'
 Plug 'xolox/vim-misc'
-Plug 'vimwiki/vimwiki'
 Plug 'tikhomirov/vim-glsl'
 
 Plug 'lilydjwg/fcitx.vim'
