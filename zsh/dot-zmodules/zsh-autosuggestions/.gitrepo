@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = https://github.com/zsh-users/zsh-autosuggestions
+	branch = master
+	commit = a411ef3e0992d4839f0732ebeb9823024afaaaa8
+	parent = 4b7fe87e88ed72a3676a477d2e6596ddbf08b430
+	method = merge
+	cmdver = 0.4.3
