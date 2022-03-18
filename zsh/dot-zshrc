@@ -3,152 +3,6 @@
 # Don't run ~/.zshrc in non interactive shell.
 [[ $- != *i* ]] && return
 
-# Start zprof.
-(( $+NAVIFUTABA_ENABLE_ZPROF )) && zmodload zsh/zprof
-
-# Start configuration added by Zim install {{{
-#
-# User configuration sourced by interactive shells
-#
-
-# -----------------
-# Zsh configuration
-# -----------------
-
-#
-# History
-#
-
-# Remove older command from the history if a duplicate is to be added.
-setopt HIST_IGNORE_ALL_DUPS
-
-#
-# Input/output
-#
-
-# Set editor default keymap to emacs (`-e`) or vi (`-v`)
-bindkey -e
-
-# Prompt for spelling correction of commands.
-setopt CORRECT
-
-# Customize spelling correction prompt.
-SPROMPT="%B%F{yellow}[Correct]%f%b %B%F{red}%R%f%b -> %B%F{green}%r%f%b ? [%B(N)%b/y/a/e]"
-
-# Remove path separator from WORDCHARS.
-WORDCHARS=${WORDCHARS//[\/]}
-
-# -----------------
-# Zim configuration
-# -----------------
-
-# Use degit instead of git as the default tool to install and update modules.
-#zstyle ':zim:zmodule' use 'degit'
-
-# --------------------
-# Module configuration
-# --------------------
-
-#
-# completion
-#
-
-# Set a custom path for the completion dump file.
-# If none is provided, the default ${ZDOTDIR:-${HOME}}/.zcompdump is used.
-#zstyle ':zim:completion' dumpfile "${ZDOTDIR:-${HOME}}/.zcompdump-${ZSH_VERSION}"
-
-#
-# git
-#
-
-# Set a custom prefix for the generated aliases. The default prefix is 'G'.
-#zstyle ':zim:git' aliases-prefix 'g'
-
-#
-# input
-#
-
-# Append `../` to your input for each `.` you type after an initial `..`
-#zstyle ':zim:input' double-dot-expand yes
-
-#
-# termtitle
-#
-
-# Set a custom terminal title format using prompt expansion escape sequences.
-# See http://zsh.sourceforge.net/Doc/Release/Prompt-Expansion.html#Simple-Prompt-Escapes
-# If none is provided, the default '%n@%m: %~' is used.
-#zstyle ':zim:termtitle' format '%1~'
-
-#
-# zsh-autosuggestions
-#
-
-# Disable automatic widget re-binding on each precmd. This can be set when
-# zsh-users/zsh-autosuggestions is the last module in your ~/.zimrc.
-ZSH_AUTOSUGGEST_MANUAL_REBIND=1
-
-# Customize the style that the suggestions are shown with.
-# See https://github.com/zsh-users/zsh-autosuggestions/blob/master/README.md#suggestion-highlight-style
-ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=242'
-
-#
-# zsh-syntax-highlighting
-#
-
-# Set what highlighters will be used.
-# See https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/docs/highlighters.md
-ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets)
-
-# Customize the main highlighter styles.
-# See https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/docs/highlighters/main.md#how-to-tweak-it
-#typeset -A ZSH_HIGHLIGHT_STYLES
-#ZSH_HIGHLIGHT_STYLES[comment]='fg=242'
-
-# ------------------
-# Initialize modules
-# ------------------
-
-ZIM_HOME=${ZDOTDIR:-${HOME}}/.zim
-if [[ ! -e ${ZIM_HOME}/zimfw.zsh ]]; then
-  # Download zimfw script if missing.
-  if (( ${+commands[curl]} )); then
-    curl -fsSL --create-dirs -o ${ZIM_HOME}/zimfw.zsh https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh
-  else
-    mkdir -p ${ZIM_HOME} && wget -nv -O ${ZIM_HOME}/zimfw.zsh https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh
-  fi
-fi
-if [[ ! ${ZIM_HOME}/init.zsh -nt ${ZDOTDIR:-${HOME}}/.zimrc ]]; then
-  # Install missing modules, and update ${ZIM_HOME}/init.zsh if missing or outdated.
-  source ${ZIM_HOME}/zimfw.zsh init -q
-fi
-source ${ZIM_HOME}/init.zsh
-
-# ------------------------------
-# Post-init module configuration
-# ------------------------------
-
-#
-# zsh-history-substring-search
-#
-
-# Bind ^[[A/^[[B manually so up/down works both before and after zle-line-init
-bindkey '^[[A' history-substring-search-up
-bindkey '^[[B' history-substring-search-down
-
-# Bind up and down keys
-zmodload -F zsh/terminfo +p:terminfo
-if [[ -n ${terminfo[kcuu1]} && -n ${terminfo[kcud1]} ]]; then
-  bindkey ${terminfo[kcuu1]} history-substring-search-up
-  bindkey ${terminfo[kcud1]} history-substring-search-down
-fi
-
-bindkey '^P' history-substring-search-up
-bindkey '^N' history-substring-search-down
-bindkey -M vicmd 'k' history-substring-search-up
-bindkey -M vicmd 'j' history-substring-search-down
-# }}} End configuration added by Zim install
-
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
@@ -156,7 +10,12 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-_zdir="${ZDOTDIR:-$HOME}/.zsh"
+# Remove path separator from WORDCHARS.
+WORDCHARS=${WORDCHARS//[\/]}
+
+# Completion
+autoload -Uz compinit && compinit
+bindkey -e
 
 # Options
 
@@ -171,6 +30,7 @@ setopt HIST_REDUCE_BLANKS
 setopt EXTENDED_HISTORY
 setopt HIST_FCNTL_LOCK
 setopt HIST_IGNORE_SPACE
+setopt HIST_IGNORE_ALL_DUPS
 # Completion related options.
 setopt ALWAYS_TO_END
 setopt AUTO_MENU
@@ -191,7 +51,7 @@ setopt MAGIC_EQUAL_SUBST
 setopt NO_CLOBBER
 setopt INTERACTIVE_COMMENTS
 setopt RC_QUOTES
-unsetopt FLOW_CONTROL; stty -ixon
+unsetopt FLOW_CONTROL
 # Jobs.
 setopt LONG_LIST_JOBS
 setopt NO_BG_NICE
@@ -200,11 +60,14 @@ setopt TRANSIENT_RPROMPT
 # Prompt.
 setopt PROMPT_SUBST
 # ZLE.
+setopt CORRECT
 unsetopt BEEP
 
 autoload -Uz colors
 colors
 
+# Customize spelling correction prompt.
+SPROMPT="%B%F{yellow}[Correct]%f%b %B%F{red}%R%f%b -> %B%F{green}%r%f%b ? [%B(N)%b/y/a/e]"
 # Shell used paramters.
 HISTFILE=~/.zsh_history
 HISTSIZE=35000
@@ -221,6 +84,11 @@ CORRECT_IGNORE='_*'
     )
 }
 
+# Quote URL.
+# https://archive.zhimingwang.org/blog/2015-09-21-zsh-51-and-bracketed-paste.html
+autoload -Uz bracketed-paste-url-magic
+zle -N bracketed-paste bracketed-paste-url-magic
+
 export EDITOR="nvim"
 export VISUAL=$EDITOR
 export PAGER=less
@@ -230,12 +98,23 @@ if [ $VTE_VERSION ]; then
     source /etc/profile.d/vte.sh
 fi
 
-# Source ~/.zdircolors.
-[[ -f ~/.zdircolors ]] && source ~/.zdircolors || print -P "%B%F{yellow}[Zshrc]%f %F{white}~/.zdircolors%f was not found. You may lost file colors.%b\n%B%F{yellow}[Zshrc]%f Generate a new %F{white}~/.zdircolors%f with %F{white}dircolors -b /path/to/LS_COLORS > ~/.zdircolors%f so it will be loaded.%f" >&2
+# Source plugins.
+source $HOME/.zmodules/zsh-completions/zsh-completions.plugin.zsh
+source $HOME/.zmodules/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh
+source $HOME/.zmodules/zsh-history-substring-search/zsh-history-substring-search.plugin.zsh
+# Customize the style that the suggestions are shown with.
+# See https://github.com/zsh-users/zsh-autosuggestions/blob/master/README.md#suggestion-highlight-style
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=242'
+source $HOME/.zmodules/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh
+source $HOME/.zmodules/zsh-z/zsh-z.plugin.zsh
+# Selected oh-my-zsh plugins.
+source $HOME/.zmodules/omz-selected/git/git.plugin.zsh
+source $HOME/.zmodules/omz-selected/sudo/sudo.plugin.zsh
+source $HOME/.zmodules/omz-selected/command-not-found/command-not-found.plugin.zsh
+source $HOME/.zmodules/omz-selected/directories.zsh
 
 # Powerlevel10k
-# Placed here to allow zinit to output things when cloning.
-
+source $HOME/.zmodules/powerlevel10k/powerlevel10k.zsh-theme
 [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh || print -P "%B%F{yellow}[Zshrc]%f The default prompt of Powerlevel10k will be loaded because no %F{white}~/.p10k.zsh%f was found.%b\n%B%F{yellow}[Zshrc]%f Type %F{white}p10k configure%f to configure Powerlevel10k." >&2
 
 POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true
@@ -274,7 +153,7 @@ autoload -Uz run-help-svn
 zstyle ':completion:*:approximate:'    max-errors 'reply=( $((($#PREFIX+$#SUFFIX)/3 )) numeric )'
 
 # don't complete backup files as executables
-#zstyle ':completion:*:complete:-command-::commands' ignored-patterns '(*\~)'
+zstyle ':completion:*:complete:-command-::commands' ignored-patterns '(*\~)'
 
 # start menu completion only if it could find no unambiguous initial string
 zstyle ':completion:*:correct:*'       insert-unambiguous true
@@ -367,4 +246,218 @@ zstyle ':completion:*:*:git:*' user-commands ${${(M)${(k)commands}:#git-*}/git-/
 # Load user config.
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
 
+true
+
+# vim:ft=zsh:ts=4:sw=4
+zstyle ':completion::(^approximate*):*:functions' ignored-patterns '_*'
+
+# Provide more processes in completion of programs like killall:
+zstyle ':completion:*:processes-names' command 'ps c -u ${USER} -o command | uniq'
+
+# complete manual by their section
+zstyle ':completion:*:manuals'    separate-sections true
+zstyle ':completion:*:manuals.*'  insert-sections   true
+zstyle ':completion:*:man:*'      menu yes select
+
+# Search path for sudo completion
+zstyle ':completion:*:sudo:*' command-path /usr/local/sbin \
+                                           /usr/local/bin  \
+                                           /usr/sbin       \
+                                           /usr/bin        \
+                                           /sbin           \
+                                           /bin            \
+                                           /usr/X11R6/bin
+
+# Rehash when complete.
+zstyle ':completion:*' rehash true
+
+# Select a completer
+zstyle ':completion:*' completer _complete _files _match _correct _approximate _expand_alias _ignored
+# Git user commands.
+zstyle ':completion:*:*:git:*' user-commands ${${(M)${(k)commands}:#git-*}/git-/}
+
+# Terminal Title
+autoload -Uz add-zsh-hook
+
+function set-xterm-terminal-title () {
+    printf '\e]2;%s\a' "$@"
+}
+
+function precmd-set-terminal-title () {
+    set-xterm-terminal-title "${(%):-"%n@%m: %~"}"
+}
+
+function preexec-set-terminal-title () {
+    set-xterm-terminal-title "${(%):-"%n@%m: "}$2"
+}
+
+if [[ "$TERM" == (screen*|xterm*|rxvt*|tmux*|putty*|konsole*|gnome*) ]]; then
+    add-zsh-hook -Uz precmd precmd-set-terminal-title
+    add-zsh-hook -Uz preexec preexec-set-terminal-title
+fi
+
+# Source: https://wiki.archlinux.org/index.php/Zsh#Key_bindings (modified)
+
+# create a zkbd compatible hash;
+# to add other keys to this hash, see: man 5 terminfo
+typeset -g -A key
+
+key[Home]="${terminfo[khome]}"
+key[End]="${terminfo[kend]}"
+key[Insert]="${terminfo[kich1]}"
+key[Backspace]="${terminfo[kbs]}"
+key[Delete]="${terminfo[kdch1]}"
+key[Up]="${terminfo[kcuu1]}"
+key[Down]="${terminfo[kcud1]}"
+key[Left]="${terminfo[kcub1]}"
+key[Right]="${terminfo[kcuf1]}"
+key[PageUp]="${terminfo[kpp]}"
+key[PageDown]="${terminfo[knp]}"
+key[ShiftTab]="${terminfo[kcbt]}"
+
+# setup key accordingly
+[[ -n "${key[Home]}"      ]] && bindkey -- "${key[Home]}"      beginning-of-line
+[[ -n "${key[End]}"       ]] && bindkey -- "${key[End]}"       end-of-line
+[[ -n "${key[Insert]}"    ]] && bindkey -- "${key[Insert]}"    overwrite-mode
+[[ -n "${key[Backspace]}" ]] && bindkey -- "${key[Backspace]}" backward-delete-char
+[[ -n "${key[Delete]}"    ]] && bindkey -- "${key[Delete]}"    delete-char
+[[ -n "${key[Up]}"        ]] && bindkey -- "${key[Up]}"        history-substring-search-up
+[[ -n "${key[Down]}"      ]] && bindkey -- "${key[Down]}"      history-substring-search-down
+[[ -n "${key[Left]}"      ]] && bindkey -- "${key[Left]}"      backward-char
+[[ -n "${key[Right]}"     ]] && bindkey -- "${key[Right]}"     forward-char
+[[ -n "${key[PageUp]}"    ]] && bindkey -- "${key[PageUp]}"    beginning-of-buffer-or-history
+[[ -n "${key[PageDown]}"  ]] && bindkey -- "${key[PageDown]}"  end-of-buffer-or-history
+[[ -n "${key[ShiftTab]}"  ]] && bindkey -- "${key[ShiftTab]}"  reverse-menu-complete
+
+# Finally, make sure the terminal is in application mode, when zle is
+# active. Only then are the values from $terminfo valid.
+if (( ${+terminfo[smkx]} && ${+terminfo[rmkx]} )); then
+    autoload -Uz add-zle-hook-widget
+    function zle_application_mode_start {
+        echoti smkx
+    }
+    function zle_application_mode_stop {
+        echoti rmkx
+    }
+    add-zle-hook-widget -Uz zle-line-init zle_application_mode_start
+    add-zle-hook-widget -Uz zle-line-finish zle_application_mode_stop
+fi
+
+# Oh-my-zsh suggested bindings.
+
+# bind UP and DOWN arrow keys (compatibility fallback
+# for Ubuntu 12.04, Fedora 21, and MacOSX 10.9 users)
+bindkey '^[[A' history-substring-search-up
+bindkey '^[[B' history-substring-search-down
+
+# bind P and N for EMACS mode
+bindkey -M emacs '^P' history-substring-search-up
+bindkey -M emacs '^N' history-substring-search-down
+
+# bind k and j for VI mode
+bindkey -M vicmd 'k' history-substring-search-up
+bindkey -M vicmd 'j' history-substring-search-down
+
+# From grml-zsh-config.
+
+function foreground-last-job () {
+    if (( ${#jobstates} )); then
+        zle .push-input
+        [[ -o hist_ignore_space ]] && BUFFER=' ' || BUFFER=''
+        BUFFER="${BUFFER}fg"
+        zle .accept-line
+    else
+        zle -M '[ZLE] No background jobs. Doing nothing.'
+    fi
+}
+zle -N foreground-last-job
+
+bindkey '^Z' foreground-last-job
+bindkey -M emacs '^Z' foreground-last-job
+bindkey -M viins '^Z' foreground-last-job
+
+# Customized word selecting.
+for f in backward-kill-word \
+         backward-word \
+         capitalize-word \
+         down-case-word \
+         forward-word \
+         kill-word \
+         transpose-words \
+         up-case-word; do
+    autoload -Uz $f-match
+    zle -N $f $f-match
+done
+
+autoload -Uz select-word-style
+select-word-style shell
+
+# Modified from Prezto.
+
+# Disable globbing.
+(( $+commands[bower] )) && alias bower='noglob bower'
+alias fc='noglob builtin fc'
+(( $+commands[fd] )) && alias fd='noglob fd'
+(( $+commands[find] )) && alias find='noglob find'
+(( $+commands[ftp] )) && alias ftp='noglob ftp'
+alias history='noglob history'
+(( $+commands[locate] )) && alias locate='noglob locate'
+(( $+commands[rake] )) && alias rake='noglob rake'
+(( $+commands[rsync] )) && alias rsync='noglob rsync'
+(( $+commands[scp] )) && alias scp='noglob scp'
+(( $+commands[sftp] )) && alias sftp='noglob sftp'
+(( $+functions[zmv] )) && alias zmv='noglob zmv'
+
+# Define general aliases.
+alias _='sudo'
+alias b='${(z)BROWSER}'
+
+alias diffu="diff --unified"
+alias e='${(z)VISUAL:-${(z)EDITOR}}'
+alias mkdir="${aliases[mkdir]:-mkdir} -p"
+alias p='${(z)PAGER}'
+alias po='popd'
+alias pu='pushd'
+alias sa='alias | grep -i'
+
+# BSD ls colors.
+export LSCOLORS='exfxcxdxbxGxDxabagacad'
+
+alias ls='command ls --color=auto'
+alias l='ls -1A'         # Lists in one column, hidden files.
+alias ll='ls -lh'        # Lists human readable sizes.
+alias lr='ll -R'         # Lists human readable sizes, recursively.
+alias la='ll -A'         # Lists human readable sizes, hidden files.
+alias lm='la | "$PAGER"' # Lists human readable sizes, hidden files through pager.
+alias lx='ll -XB'        # Lists sorted by extension (GNU only).
+alias lk='ll -Sr'        # Lists sorted by size, largest last.
+alias lt='ll -tr'        # Lists sorted by date, most recent last.
+alias lc='lt -c'         # Lists sorted by date, most recent last, shows change time.
+alias lu='lt -u'         # Lists sorted by date, most recent last, shows access time.
+
+# Grep colors.
+export GREP_COLOR='37;45'           # BSD.
+export GREP_COLORS="mt=$GREP_COLOR" # GNU.
+
+alias grep="${aliases[grep]:-grep} --color=auto"
+
+# File Download
+if (( $+commands[curl] )); then
+  alias get='curl --continue-at - --location --progress-bar --remote-name --remote-time'
+elif (( $+commands[wget] )); then
+  alias get='wget --continue --progress=bar --timestamping'
+fi
+
+# Serves a directory via HTTP.
+# Try Python 3 first. If no python3, maybe the system udes Python 2 as python. so use that.
+if (( $+commands[python3] )); then
+  # Python 3
+  alias http-serve='python3 -m http.server'
+else
+  # Python 2
+  alias http-serve='python -m SimpleHTTPServer'
+fi
+
+# Load user config.
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
 # vim:ft=zsh:ts=4:sw=4
