@@ -6,7 +6,7 @@
 [subrepo]
 	remote = https://github.com/trapd00r/LS_COLORS
 	branch = master
-	commit = b591fd742026cab8ce1df1a33e39cbd9fd68f88e
-	parent = c00ef0b4e37a2d6d12658f4b3590f27626d69739
+	commit = 7271a7a8135c1e8a82584bfc9a8ebc227c5c6b2b
+	parent = cded8b3c5779d5fb30e601e5b6482cf4f193886a
 	method = merge
 	cmdver = 0.4.3
