@@ -112,7 +112,7 @@ source $HOME/.zmodules/omz-selected/git/git.plugin.zsh
 source $HOME/.zmodules/omz-selected/sudo/sudo.plugin.zsh
 source $HOME/.zmodules/omz-selected/command-not-found/command-not-found.plugin.zsh
 source $HOME/.zmodules/omz-selected/directories.zsh
-
+source $HOME/.zmodules/lscolors/lscolors.sh
 # Powerlevel10k
 source $HOME/.zmodules/powerlevel10k/powerlevel10k.zsh-theme
 [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh || print -P "%B%F{yellow}[Zshrc]%f The default prompt of Powerlevel10k will be loaded because no %F{white}~/.p10k.zsh%f was found.%b\n%B%F{yellow}[Zshrc]%f Type %F{white}p10k configure%f to configure Powerlevel10k." >&2
