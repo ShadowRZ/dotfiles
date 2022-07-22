@@ -303,7 +303,7 @@ To ~~ridiculous~~ extravagant:
 
 Powerlevel10k comes with dozens of built-in high quality segments. When you run `p10k configure`
 and choose any style except [Pure](#pure-compatibility), many of these segments get enabled by
-default while others be manually enabled by opening `~/.p10k.zsh` and uncommenting them. You can
+default while others can be manually enabled by opening `~/.p10k.zsh` and uncommenting them. You can
 enable as many segments as you like. It won't slow down your prompt or Zsh startup.
 
 | Segment | Meaning |
@@ -412,6 +412,7 @@ Powerlevel10k.
 - [Homebrew](#homebrew)
 - [Arch Linux](#arch-linux)
 - [Alpine Linux](#arch-linux)
+- [Fig](#fig)
 
 ### Manual
 
@@ -510,9 +511,15 @@ Historically, [it has been breaking often and for extended periods of time](
 ### Alpine Linux
 
 ```zsh
-apk add zsh-theme-powerlevel10k
-echo 'source /usr/share/zsh/plugins/powerlevel10k/powerlevel10k.zsh-theme' >>~/.zshrc
+apk add zsh zsh-theme-powerlevel10k
+mkdir -p ~/.local/share/zsh/plugins
+ln -s /usr/share/zsh/plugins/powerlevel10k ~/.local/share/zsh/plugins/
 ```
+
+### Fig
+
+Follow the instructions on
+[this page](https://fig.io/plugins/other/powerlevel10k).
 
 ## Configuration
 
@@ -697,6 +704,36 @@ If you are using a different terminal, proceed with manual font installation. ðŸ
      ```
      After changing the config run `xrdb ~/.Xresources` to reload it. The new config is applied to
      all new terminals.
+   - Crostini (Linux on Chrome OS): Open
+     chrome-untrusted://terminal/html/nassh_preferences_editor.html, set *Text font family* to
+      `'MesloLGS NF'` and *Custom CSS (inline text)* to the following:
+     ```css
+     @font-face {
+      font-family: "MesloLGS NF";
+      src: url("https://raw.githubusercontent.com/romkatv/powerlevel10k-media/master/MesloLGS%20NF%20Regular.ttf");
+      font-weight: normal;
+      font-style: normal;
+     }
+     @font-face {
+         font-family: "MesloLGS NF";
+         src: url("https://raw.githubusercontent.com/romkatv/powerlevel10k-media/master/MesloLGS%20NF%20Bold.ttf");
+         font-weight: bold;
+         font-style: normal;
+     }
+     @font-face {
+         font-family: "MesloLGS NF";
+         src: url("https://raw.githubusercontent.com/romkatv/powerlevel10k-media/master/MesloLGS%20NF%20Italic.ttf");
+         font-weight: normal;
+         font-style: italic;
+     }
+     @font-face {
+         font-family: "MesloLGS NF";
+         src: url("https://raw.githubusercontent.com/romkatv/powerlevel10k-media/master/MesloLGS%20NF%20Bold%20Italic.ttf");
+         font-weight: bold;
+         font-style: italic;
+     }
+     ```
+     **_CAVEAT_**: If you open the normal terminal preferences these settings will be overwritten.
 1. Run `p10k configure` to generate a new `~/.p10k.zsh`. The old config may work
    incorrectly with the new font.
 
@@ -827,7 +864,7 @@ The command to update Powerlevel10k depends on how it was installed.
    | [Zinit](#zinit)               | `zinit delete romkatv/powerlevel10k`                             |
    | [Homebrew](#homebrew)         | `brew uninstall powerlevel10k; brew untap romkatv/powerlevel10k` |
    | [Arch Linux](#arch-linux)     | `yay -R --noconfirm zsh-theme-powerlevel10k-git`                 |
-   | [Alpine Linux](#alpine-linux) | `apk del zsh-theme-powerlevel10k`                            |
+   | [Alpine Linux](#alpine-linux) | `apk del zsh-theme-powerlevel10k`                                |
 6. Restart Zsh. [Do not use `source ~/.zshrc`](#weird-things-happen-after-typing-source-zshrc).
 7. Delete Powerlevel10k cache files.
    ```zsh

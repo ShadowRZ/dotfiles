@@ -344,14 +344,14 @@
   # typeset -g POWERLEVEL9K_DIR_PREFIX='in '
 
   #####################################[ vcs: git status ]######################################
-  # Version control system colors.
+  # Version control background colors.
   typeset -g POWERLEVEL9K_VCS_CLEAN_BACKGROUND=2
   typeset -g POWERLEVEL9K_VCS_MODIFIED_BACKGROUND=3
   typeset -g POWERLEVEL9K_VCS_UNTRACKED_BACKGROUND=2
   typeset -g POWERLEVEL9K_VCS_CONFLICTED_BACKGROUND=3
   typeset -g POWERLEVEL9K_VCS_LOADING_BACKGROUND=8
 
-  # Branch icon. Set this parameter to '\uF126 ' for the popular Powerline branch icon.
+  # Branch icon. Set this parameter to '\UE0A0 ' for the popular Powerline branch icon.
   typeset -g POWERLEVEL9K_VCS_BRANCH_ICON=
 
   # Untracked files icon. It's really a question mark, your font isn't broken.

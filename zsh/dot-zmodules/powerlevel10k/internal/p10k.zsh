@@ -1349,7 +1349,7 @@ _p9k_prompt_battery_init() {
     return
   fi
   if [[ $_p9k_os != (Linux|Android) ||
-        -z /sys/class/power_supply/(CMB*|BAT*|battery)/(energy_full|charge_full|charge_counter)(#qN) ]]; then
+        -z /sys/class/power_supply/(CMB*|BAT*|*battery)/(energy_full|charge_full|charge_counter)(#qN) ]]; then
     typeset -g "_p9k__segment_cond_${_p9k__prompt_side}[_p9k__segment_index]"='${:-}'
   fi
 }
@@ -1407,7 +1407,7 @@ _p9k_prompt_battery_set_args() {
 
     Linux|Android)
       # See https://sourceforge.net/projects/acpiclient.
-      local -a bats=( /sys/class/power_supply/(CMB*|BAT*|battery)/(FN) )
+      local -a bats=( /sys/class/power_supply/(CMB*|BAT*|*battery)/(FN) )
       (( $#bats )) || return
 
       local -i energy_now energy_full power_now
@@ -5999,7 +5999,7 @@ _p9k_set_instant_prompt() {
   [[ -n $RPROMPT ]] || unset RPROMPT
 }
 
-typeset -gri __p9k_instant_prompt_version=46
+typeset -gri __p9k_instant_prompt_version=47
 
 _p9k_dump_instant_prompt() {
   local user=${(%):-%n}
@@ -6999,7 +6999,7 @@ function _p9k_reset_prompt() {
       zle .reset-prompt
       (( ${+functions[z4h]} )) || zle -R
     } always {
-      (( _p9k__can_hide_cursor )) && echoti cnorm
+      (( _p9k__can_hide_cursor )) && print -rn -- $_p9k__cnorm
       _p9k__cursor_hidden=0
     }
   fi
@@ -7121,6 +7121,14 @@ _p9k_init_vars() {
   typeset -gi _p9k__restore_prompt_fd
   typeset -gi _p9k__redraw_fd
   typeset -gi _p9k__can_hide_cursor=$(( $+terminfo[civis] && $+terminfo[cnorm] ))
+  if (( _p9k__can_hide_cursor )); then
+    # See https://github.com/romkatv/powerlevel10k/issues/1699
+    if [[ $terminfo[cnorm] == *$'\e[?25h'(|'\e'*) ]]; then
+      typeset -g _p9k__cnorm=$'\e[?25h'
+    else
+      typeset -g _p9k__cnorm=$terminfo[cnorm]
+    fi
+  fi
   typeset -gi _p9k__cursor_hidden
   typeset -gi _p9k__non_hermetic_expansion
   typeset -g  _p9k__time
@@ -7656,7 +7664,7 @@ function _p9k_on_widget_deactivate-region() { _p9k_check_visual_mode; }
 function _p9k_on_widget_zle-line-init() {
   (( _p9k__cursor_hidden )) || return 0
   _p9k__cursor_hidden=0
-  echoti cnorm
+  print -rn -- $_p9k__cnorm
 }
 
 function _p9k_on_widget_zle-line-finish() {
@@ -8280,9 +8288,10 @@ _p9k_init_toolbox() {
     local name=(${(Q)${${(@M)${(f)"$(</run/.containerenv)"}:#name=*}#name=}})
     [[ ${#name} -eq 1 && -n ${name[1]} ]] || return 0
     typeset -g P9K_TOOLBOX_NAME=${name[1]}
-  elif [[ -n $DISTROBOX_ENTER_PATH && -n $NAME ]]; then
+  elif [[ -n $DISTROBOX_ENTER_PATH ]]; then
     local name=${(%):-%m}
-    if [[ $name == $NAME* ]]; then
+    # $NAME can be empty, see https://github.com/romkatv/powerlevel10k/pull/1916.
+    if [[ -n $name && $name == $NAME* ]]; then
       typeset -g P9K_TOOLBOX_NAME=$name
     fi
   fi
