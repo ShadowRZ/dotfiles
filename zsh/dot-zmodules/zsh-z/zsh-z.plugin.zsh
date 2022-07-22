@@ -4,7 +4,7 @@
 #
 # https://github.com/agkozak/zsh-z
 #
-# Copyright (c) 2018-2021 Alexandros Kozak
+# Copyright (c) 2018-2022 Alexandros Kozak
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -217,9 +217,11 @@ zshz() {
 
     fi
 
+    integer tmpfd
     case $action in
       --add)
-        _zshz_update_datafile "$*" >| "$tempfile"
+        exec {tmpfd}>|"$tempfile"  # Open up tempfile for writing
+        _zshz_update_datafile $tmpfd "$*"
         local ret=$?
         ;;
       --remove)
@@ -250,10 +252,22 @@ zshz() {
         else
           return 1  # The $PWD isn't in the datafile
         fi
-        print -l -- $lines > "$tempfile"
+        exec {tmpfd}>|"$tempfile"  # Open up tempfile for writing
+        print -u $tmpfd -l -- $lines
         local ret=$?
         ;;
     esac
+
+    if (( tmpfd != 0 )); then
+      # Close tempfile
+      exec {tmpfd}>&-
+    fi
+
+    if (( ret != 0 )); then
+      # Avoid clobbering the datafile if the write to tempfile failed
+      zf_rm -f "$tempfile"
+      return $ret
+    fi
 
     local owner
     owner=${ZSHZ_OWNER:-${_Z_OWNER}}
@@ -265,15 +279,10 @@ zshz() {
         zf_chown ${owner}:"$(id -ng ${owner})" "$datafile"
       fi
     else
-      # Avoid clobbering the datafile in a race condition
-      if (( ret != 0 )) && [[ -f $datafile ]]; then
-        zf_rm -f "$tempfile"
-      else
-        if [[ -n $owner ]]; then
-          zf_chown "${owner}":"$(id -ng "${owner}")" "$tempfile"
-        fi
-        zf_mv -f "$tempfile" "$datafile" 2> /dev/null || zf_rm -f "$tempfile"
+      if [[ -n $owner ]]; then
+        zf_chown "${owner}":"$(id -ng "${owner}")" "$tempfile"
       fi
+      zf_mv -f "$tempfile" "$datafile" 2> /dev/null || zf_rm -f "$tempfile"
     fi
 
     # In order to make z -x work, we have to disable zsh-z's adding
@@ -294,15 +303,17 @@ zshz() {
   #   ZSHZ_MAX_SCORE
   #
   # Arguments:
-  #   $1 Path to be added to datafile
+  #   $1 File descriptor linked to tempfile
+  #   $2 Path to be added to datafile
   ############################################################
   _zshz_update_datafile() {
 
+    integer fd=$1
     local -A rank time
 
     # Characters special to the shell (such as '[]') are quoted with backslashes
     # See https://github.com/rupa/z/issues/246
-    local add_path=${(q)1}
+    local add_path=${(q)2}
 
     local -a existing_paths
     local now=$EPOCHSECONDS line dir
@@ -328,7 +339,7 @@ zshz() {
     lines=( $existing_paths )
 
     for line in $lines; do
-      path_field=${line%%\|*}
+      path_field=${(q)line%%\|*}
       rank_field=${${line%\|*}#*\|}
       time_field=${line##*\|}
 
@@ -348,11 +359,11 @@ zshz() {
     if (( count > ${ZSHZ_MAX_SCORE:-${_Z_MAX_SCORE:-9000}} )); then
       # Aging
       for x in ${(k)rank}; do
-        print -- "$x|$(( 0.99 * rank[$x] ))|${time[$x]}"
+        print -u $fd -- "$x|$(( 0.99 * rank[$x] ))|${time[$x]}" || return 1
       done
     else
       for x in ${(k)rank}; do
-        print -- "$x|${rank[$x]}|${time[$x]}"
+        print -u $fd -- "$x|${rank[$x]}|${time[$x]}" || return 1
       done
     fi
   }
