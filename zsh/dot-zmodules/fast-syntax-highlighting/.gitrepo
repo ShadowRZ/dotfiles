@@ -6,7 +6,7 @@
 [subrepo]
 	remote = https://github.com/zdharma-continuum/fast-syntax-highlighting
 	branch = master
-	commit = 9469bd0e7ed65eb30e38085409b96ad6643752c5
-	parent = ac7e150dfa73129691949a91ea4a233686fc57af
+	commit = 721be2a93501bbb5e6ca20a05a008d21811cb8fa
+	parent = 53de44bd0275ac977e8c45bf7a18046ea172cc83
 	method = merge
 	cmdver = 0.4.3
