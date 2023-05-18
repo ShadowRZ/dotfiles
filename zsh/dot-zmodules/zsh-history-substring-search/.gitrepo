@@ -6,7 +6,7 @@
 [subrepo]
 	remote = https://github.com/zsh-users/zsh-history-substring-search
 	branch = master
-	commit = 4abed97b6e67eb5590b39bcd59080aa23192f25d
-	parent = 6459cabe7f32e0feb3c768fa3e44e0d8c1a6a1e0
+	commit = 400e58a87f72ecec14f783fbd29bc6be4ff1641c
+	parent = b65e7050b4abb7be776ba096fae8bd9139e878e0
 	method = merge
 	cmdver = 0.4.3
