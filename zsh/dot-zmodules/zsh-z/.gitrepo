@@ -6,7 +6,7 @@
 [subrepo]
 	remote = https://github.com/agkozak/zsh-z
 	branch = master
-	commit = aaafebcd97424c570ee247e2aeb3da30444299cd
-	parent = f2897f49dfa1f214a1b8d0e9155ff4675ddba3b3
+	commit = 6bfe418332866d15373392164df11b4fbec2083f
+	parent = ea3437f01e534adf0057960d09cfc088c9b79d94
 	method = merge
 	cmdver = 0.4.3
