@@ -299,6 +299,7 @@ STICKY_OTHER_WRITABLE 48;5;235;38;5;139;3 # core
 .coffee               38;5;074;1          # Java
 .java                 38;5;074;1          # Java
 .js                   38;5;074;1          # Java
+.jsx                  38;5;074;1          # Javascript eXtended
 .mjs                  38;5;074;1          # Java
 .jsm                  38;5;074;1          # Java
 .jsp                  38;5;074;1          # Java
@@ -339,6 +340,7 @@ STICKY_OTHER_WRITABLE 48;5;235;38;5;139;3 # core
 .jpeg                 38;5;97             # Graphics
 .JPG                  38;5;97             # Graphics
 .jpg                  38;5;97             # Graphics
+.jxl                  38;5;97             # Graphics
 .nth                  38;5;97             # Graphics
 .png                  38;5;97             # Graphics
 .psd                  38;5;97             # Graphics
