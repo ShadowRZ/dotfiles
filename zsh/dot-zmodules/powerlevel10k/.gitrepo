@@ -6,7 +6,7 @@
 [subrepo]
 	remote = https://github.com/romkatv/powerlevel10k
 	branch = master
-	commit = e72264e01cb24431455ed6e398a769bca0da7ffe
-	parent = 654ce9f4998f02a128c7b8cc308f3a38614d7f09
+	commit = a69aa22fa8a4fe0927bb73716c2f7c9d2580a51d
+	parent = e456c2f837420b07c657ff3bee71b5a3586bc691
 	method = merge
 	cmdver = 0.4.3
