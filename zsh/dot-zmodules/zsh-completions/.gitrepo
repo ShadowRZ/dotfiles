@@ -6,7 +6,7 @@
 [subrepo]
 	remote = https://github.com/zsh-users/zsh-completions
 	branch = master
-	commit = 11258bcd48521b5bc7b683104bb0f5cb9375edee
-	parent = 30d099f28951e6965891fcea02e1fb1c730d8172
+	commit = 449cc702dc0363cd8fc37cc2d1fdb422f6d4d0e8
+	parent = 9f5abfa5a096a6bbee695171841da3692aac755e
 	method = merge
 	cmdver = 0.4.3
