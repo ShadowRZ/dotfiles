@@ -333,7 +333,7 @@ for f in backward-kill-word \
 done
 
 autoload -Uz select-word-style
-select-word-style shell
+select-word-style normal
 
 # Modified from Prezto.
 
