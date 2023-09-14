@@ -7,9 +7,6 @@ symbol = "aws "
 [azure]
 symbol = "az "
 
-[battery]
-disabled = true
-
 [bun]
 symbol = "bun "
 
