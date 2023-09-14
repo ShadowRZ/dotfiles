@@ -3,13 +3,6 @@
 # Don't run ~/.zshrc in non interactive shell.
 [[ $- != *i* ]] && return
 
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-
 # Remove path separator from WORDCHARS.
 WORDCHARS=${WORDCHARS//[\/]}
 
@@ -67,7 +60,7 @@ autoload -Uz colors
 colors
 
 # Customize spelling correction prompt.
-SPROMPT="%B%F{yellow}[Correct]%f%b %B%F{red}%R%f%b -> %B%F{green}%r%f%b ? [%B(N)%b/y/a/e]"
+SPROMPT="%B%F{yellow}[ShadowRZ/Zsh/Correct]%f%b %B%F{red}%R%f%b -> %B%F{green}%r%f%b ? [%B(N)%b/y/a/e]"
 # Shell used paramters.
 HISTFILE=~/.zsh_history
 HISTSIZE=35000
@@ -78,7 +71,7 @@ CORRECT_IGNORE='_*'
 () {
     local white_b=$fg_bold[white] yellow_b=$fg_bold[yellow] blue=$fg[blue] rst=$reset_color
     TIMEFMT=(
-        "${yellow_b}EST=%*Es$rst $white_b%J$rst"$'\n' # First line
+        "${yellow_b}[ShadowRZ/Zsh/Elpased] EST=%*Es$rst $white_b%J$rst"$'\n' # First line
         "${yellow_b} CPU$rst: USR: $blue%U$rst SYS: $blue%S$rst PER:$blue%P$rst"$'\n' # Second line
         "${yellow_b} MEM$rst: $blue%M$rst" # Third line
     )
@@ -113,11 +106,8 @@ source $HOME/.zmodules/omz-selected/sudo/sudo.plugin.zsh
 source $HOME/.zmodules/omz-selected/command-not-found/command-not-found.plugin.zsh
 source $HOME/.zmodules/omz-selected/directories.zsh
 source $HOME/.zmodules/lscolors/lscolors.sh
-# Powerlevel10k
-source $HOME/.zmodules/powerlevel10k/powerlevel10k.zsh-theme
-[[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh || print -P "%B%F{yellow}[Zshrc]%f The default prompt of Powerlevel10k will be loaded because no %F{white}~/.p10k.zsh%f was found.%b\n%B%F{yellow}[Zshrc]%f Type %F{white}p10k configure%f to configure Powerlevel10k." >&2
 
-POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true
+(( $+commands[starship] )) && eval "$(starship init zsh)"
 
 # Colored man pages and more.
 export LESS_TERMCAP_mb=$'\E[01;31m'
@@ -148,100 +138,86 @@ autoload -Uz run-help-sudo
 autoload -Uz run-help-svk
 autoload -Uz run-help-svn
 
-# Completion system. (Modified from grml and https://github.com/lilydjwg/dotzsh)
+# Completion system.
+# Select a completer
+zstyle ':completion:*' completer _complete _match _correct _approximate _expand_alias _ignored _files
+# Partial matching
+zstyle ':completion:*' matcher-list '' 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
+# Allow completing user Git commands
+zstyle ':completion:*:*:git:*' user-commands ${${(M)${(k)commands}:#git-*}/git-/}
+
+# Auto rehash for new binaries
+zstyle ':completion:*' rehash true
+# Squeeze slashes
+zstyle ':completion:*' squeeze-slashes true
+# Preserve some prefix
+zstyle ':completion:*' preserve-prefix '//[^/]##/'
+# Add space
+zstyle ':completion:*' add-space true
+# Tweak cd
+zstyle ':completion:*:cd:*' ignore-parents parent pwd .. directory
+# > The following example sets special-dirs to `..' when the current prefix is
+# > empty, is a single `.', or consists only of a path beginning with `../'.
+# > Otherwise the value is `false'.
+zstyle -e ':completion:*' special-dirs '[[ $PREFIX = (../)#(|.|..) ]] && reply=(..)'
+
+### Rest modified from Grml config
 # allow one error for every three characters typed in approximate completer
 zstyle ':completion:*:approximate:'    max-errors 'reply=( $((($#PREFIX+$#SUFFIX)/3 )) numeric )'
-
 # don't complete backup files as executables
 zstyle ':completion:*:complete:-command-::commands' ignored-patterns '(*\~)'
-
 # start menu completion only if it could find no unambiguous initial string
 zstyle ':completion:*:correct:*'       insert-unambiguous true
-zstyle ':completion:*:corrections'     format '%B%F{yellow}[Complete]%f%b%F{red} From %B%d (errors: %e)%b%f'
+zstyle ':completion:*:corrections'     format '%B%F{yellow}[ShadowRZ/Zsh/Complete]%f%b%F{red} From %BCorrected (%e errors)%b%f'
 zstyle ':completion:*:correct:*'       original true
-
 # activate color-completion
 zstyle ':completion:*:default'         list-colors ${(s.:.)LS_COLORS}
-
 # format on completion
-zstyle ':completion:*:descriptions'    format '%B%F{yellow}[Complete]%f%b%F{red} From %B%d%b%f'
-
+zstyle ':completion:*:descriptions'    format '%B%F{yellow}[ShadowRZ/Zsh/Complete]%f%b%F{red} From %B%d%b%f'
 # automatically complete 'cd -<tab>' and 'cd -<ctrl-d>' with menu
 zstyle ':completion:*:*:cd:*:directory-stack' menu yes select
-
 # insert all expansions for expand completer
 zstyle ':completion:*:expand:*'        tag-order all-expansions
 zstyle ':completion:*:history-words'   list false
-
 # activate menu
 zstyle ':completion:*:history-words'   menu yes
 zstyle ':completion:*:*:*:*:*'         menu yes select
-
 # ignore duplicate entries
 zstyle ':completion:*:history-words'   remove-all-dups yes
 zstyle ':completion:*:history-words'   stop yes
-
 # match uppercase from lowercase
 zstyle ':completion:*'                 matcher-list 'm:{a-z}={A-Z}'
-
 # separate matches into groups
 zstyle ':completion:*:matches'         group 'yes'
 zstyle ':completion:*'                 group-name ''
-
 zstyle ':completion:*:messages'        format '%d'
 zstyle ':completion:*:options'         auto-description '%d'
-
 # describe options in full
 zstyle ':completion:*:options'         description 'yes'
-
 # on processes completion complete all user processes
-zstyle ':completion:*:processes'       command 'ps -afu$USER'
-
+# [See ps(1) for help on this specification]
+zstyle ':completion:*:processes'       command 'ps -u${USER} -o user,pid,cmd'
 # offer indexes before parameters in subscripts
 zstyle ':completion:*:*:-subscript-:*' tag-order indexes parameters
-
 # provide verbose completion information
 zstyle ':completion:*'                 verbose true
-
 # recent (as of Dec 2007) zsh versions are able to provide descriptions
 # for commands (read: 1st word in the line) that it will list for the user
 # to choose from. The following disables that, because it's not exactly fast.
 zstyle ':completion:*:-command-:*:'    verbose false
-
 # set format for warnings
-zstyle ':completion:*:warnings'        format '%B%F{yellow}[Complete]%f%b%F{red} No matches found. :(%f'
-
+zstyle ':completion:*:warnings'        format '%B%F{yellow}[ShadowRZ/Zsh/Complete]%f%b%F{red} No matches found. :(%f'
 # define files to ignore for zcompile
 zstyle ':completion:*:*:zcompile:*'    ignored-patterns '(*~|*.zwc)'
 zstyle ':completion:correct:'          prompt 'correct to: %e'
-
 # Ignore completion functions for commands you don't have:
 zstyle ':completion::(^approximate*):*:functions' ignored-patterns '_*'
-
 # Provide more processes in completion of programs like killall:
 zstyle ':completion:*:processes-names' command 'ps c -u ${USER} -o command | uniq'
-
 # complete manual by their section
 zstyle ':completion:*:manuals'    separate-sections true
 zstyle ':completion:*:manuals.*'  insert-sections   true
 zstyle ':completion:*:man:*'      menu yes select
-
-# Search path for sudo completion
-zstyle ':completion:*:sudo:*' command-path /usr/local/sbin \
-                                           /usr/local/bin  \
-                                           /usr/sbin       \
-                                           /usr/bin        \
-                                           /sbin           \
-                                           /bin            \
-                                           /usr/X11R6/bin
-
-# Rehash when complete.
-zstyle ':completion:*' rehash true
-
-# Select a completer
-zstyle ':completion:*' completer _complete _files _match _correct _approximate _expand_alias _ignored
-# Git user commands.
-zstyle ':completion:*:*:git:*' user-commands ${${(M)${(k)commands}:#git-*}/git-/}
 
 # Terminal Title
 autoload -Uz add-zsh-hook
@@ -374,56 +350,6 @@ alias history='noglob history'
 (( $+commands[scp] )) && alias scp='noglob scp'
 (( $+commands[sftp] )) && alias sftp='noglob sftp'
 (( $+functions[zmv] )) && alias zmv='noglob zmv'
-
-# Define general aliases.
-alias _='sudo'
-alias b='${(z)BROWSER}'
-
-alias diffu="diff --unified"
-alias e='${(z)VISUAL:-${(z)EDITOR}}'
-alias mkdir="${aliases[mkdir]:-mkdir} -p"
-alias p='${(z)PAGER}'
-alias po='popd'
-alias pu='pushd'
-alias sa='alias | grep -i'
-
-# BSD ls colors.
-export LSCOLORS='exfxcxdxbxGxDxabagacad'
-
-alias ls='command ls --color=auto'
-alias l='ls -1A'         # Lists in one column, hidden files.
-alias ll='ls -lh'        # Lists human readable sizes.
-alias lr='ll -R'         # Lists human readable sizes, recursively.
-alias la='ll -A'         # Lists human readable sizes, hidden files.
-alias lm='la | "$PAGER"' # Lists human readable sizes, hidden files through pager.
-alias lx='ll -XB'        # Lists sorted by extension (GNU only).
-alias lk='ll -Sr'        # Lists sorted by size, largest last.
-alias lt='ll -tr'        # Lists sorted by date, most recent last.
-alias lc='lt -c'         # Lists sorted by date, most recent last, shows change time.
-alias lu='lt -u'         # Lists sorted by date, most recent last, shows access time.
-
-# Grep colors.
-export GREP_COLOR='37;45'           # BSD.
-export GREP_COLORS="mt=$GREP_COLOR" # GNU.
-
-alias grep="${aliases[grep]:-grep} --color=auto"
-
-# File Download
-if (( $+commands[curl] )); then
-  alias get='curl --continue-at - --location --progress-bar --remote-name --remote-time'
-elif (( $+commands[wget] )); then
-  alias get='wget --continue --progress=bar --timestamping'
-fi
-
-# Serves a directory via HTTP.
-# Try Python 3 first. If no python3, maybe the system udes Python 2 as python. so use that.
-if (( $+commands[python3] )); then
-  # Python 3
-  alias http-serve='python3 -m http.server'
-else
-  # Python 2
-  alias http-serve='python -m SimpleHTTPServer'
-fi
 
 # Load user config.
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
